@@ -1,13 +1,191 @@
-<!DOCTYPE html>
-<html lang="ja">
-    <head>  
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>クイズアプリ</title>
-    </head>
+{% extends 'base/base.html' %}
+{% load static %}
 
-    <body>
-        <h1>テスト画面</h1>
-    </body>
+{% block title %}
+    TOP | DataQuiz AI
+{% endblock %}
 
-</html>
+{% block extra_css %}
+    <link
+        rel="stylesheet"
+        href="{% static 'quizapp/css/index.css' %}"
+    >
+{% endblock %}
+
+{% block content %}
+
+    <section class="hero">
+
+        <span class="hero-badge">
+            AIで学ぶデータサイエンス
+        </span>
+
+        <h1 class="hero-title">
+            データサイエンスを、<br>
+            クイズで学ぼう。
+        </h1>
+
+        <p class="hero-description">
+            分野と難易度を選んで、<br class="mobile-break">
+            AIが作る問題に挑戦。
+        </p>
+
+        <a
+            class="button button-primary hero-button"
+            href="#subjects"
+        >
+            クイズを始める
+            <span aria-hidden="true">→</span>
+        </a>
+
+        {% if user.is_authenticated %}
+            <p class="hero-note">
+                {{ user.username }}さん、今日も学習を始めよう。
+            </p>
+        {% else %}
+            <p class="hero-note">
+                ログインなしでも挑戦できます
+            </p>
+        {% endif %}
+
+    </section>
+
+    <section
+        class="subjects-section page-container"
+        id="subjects"
+        aria-labelledby="subjects-title"
+    >
+        <h2
+            class="section-title"
+            id="subjects-title"
+        >
+            学べる分野
+        </h2>
+
+        <div class="subject-grid">
+
+            <article class="subject-card">
+
+                <span
+                    class="subject-icon icon-python"
+                    aria-hidden="true"
+                >
+                    Py
+                </span>
+
+                <div class="subject-text">
+                    <h3>Python</h3>
+                    <p>基本文法・リスト・辞書・関数</p>
+                </div>
+
+            </article>
+
+            <article class="subject-card">
+
+                <span
+                    class="subject-icon icon-pandas"
+                    aria-hidden="true"
+                >
+                    Pd
+                </span>
+
+                <div class="subject-text">
+                    <h3>pandas</h3>
+                    <p>データ抽出・集計・欠損値処理</p>
+                </div>
+
+            </article>
+
+            <article class="subject-card">
+
+                <span
+                    class="subject-icon icon-sql"
+                    aria-hidden="true"
+                >
+                    SQL
+                </span>
+
+                <div class="subject-text">
+                    <h3>SQL</h3>
+                    <p>データ検索・結合・集計</p>
+                </div>
+
+            </article>
+
+            <article class="subject-card">
+
+                <span
+                    class="subject-icon icon-statistics"
+                    aria-hidden="true"
+                >
+                    Σ
+                </span>
+
+                <div class="subject-text">
+                    <h3>統計</h3>
+                    <p>平均・分散・確率・仮説検定</p>
+                </div>
+
+            </article>
+
+            <article class="subject-card">
+
+                <span
+                    class="subject-icon icon-machine"
+                    aria-hidden="true"
+                >
+                    ML
+                </span>
+
+                <div class="subject-text">
+                    <h3>機械学習</h3>
+                    <p>モデルの仕組み・過学習</p>
+                </div>
+
+            </article>
+
+            <article class="subject-card">
+
+                <span
+                    class="subject-icon icon-metrics"
+                    aria-hidden="true"
+                >
+                    ✓
+                </span>
+
+                <div class="subject-text">
+                    <h3>評価指標</h3>
+                    <p>Accuracy・Precision・Recall・F1</p>
+                </div>
+
+            </article>
+
+        </div>
+    </section>
+
+    {% if not user.is_authenticated %}
+        <section class="signup-section page-container">
+
+            <div class="signup-banner">
+
+                <div class="signup-banner-text">
+                    <h2>学習の成果を記録しよう</h2>
+
+                    <p>
+                        学習履歴・間違えた問題の復習・お気に入り
+                    </p>
+                </div>
+
+                <a
+                    class="button button-outline"
+                    href="{% url 'accounts:sign' %}"
+                >
+                    新規登録
+                </a>
+
+            </div>
+
+        </section>
+    {% endif %}
+
+{% endblock %}

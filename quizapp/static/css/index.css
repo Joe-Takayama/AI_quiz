@@ -1,0 +1,297 @@
+.page-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 32px;
+}
+
+/* メインの紹介部分 */
+
+.hero {
+    padding: 64px 20px 48px;
+    text-align: center;
+}
+
+.hero-badge {
+    display: inline-block;
+    padding: 6px 18px;
+
+    color: #1d4ed8;
+    background: var(--light-blue);
+
+    border-radius: 999px;
+
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.hero-title {
+    margin: 24px 0 20px;
+
+    font-size: clamp(32px, 4vw, 52px);
+    line-height: 1.4;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+}
+
+.hero-description {
+    margin: 0;
+
+    color: #475569;
+
+    font-size: 18px;
+    line-height: 1.8;
+}
+
+.mobile-break {
+    display: none;
+}
+
+.hero-button {
+    min-width: 280px;
+    min-height: 56px;
+    margin-top: 28px;
+
+    font-size: 18px;
+}
+
+.hero-note {
+    margin: 12px 0 0;
+
+    color: var(--muted);
+    font-size: 14px;
+}
+
+/* 分野一覧 */
+
+.subjects-section {
+    scroll-margin-top: 24px;
+}
+
+.section-title {
+    margin: 0 0 24px;
+
+    font-size: 26px;
+    text-align: center;
+}
+
+.subject-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 20px;
+}
+
+.subject-card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+
+    min-height: 112px;
+    padding: 20px;
+
+    background: var(--surface);
+
+    border: 1px solid #dbe3ee;
+    border-radius: 12px;
+}
+
+.subject-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 48px;
+    height: 48px;
+    flex-shrink: 0;
+
+    border-radius: 12px;
+
+    font-size: 20px;
+    font-weight: 800;
+}
+
+.icon-python {
+    color: #2563eb;
+    background: #dbeafe;
+}
+
+.icon-pandas {
+    color: #7c3aed;
+    background: #ede9fe;
+}
+
+.icon-sql {
+    color: #0284c7;
+    background: #e0f2fe;
+
+    font-size: 16px;
+}
+
+.icon-statistics {
+    color: #16a34a;
+    background: #dcfce7;
+
+    font-size: 28px;
+}
+
+.icon-machine {
+    color: #ea580c;
+    background: #ffedd5;
+}
+
+.icon-metrics {
+    color: #e11d48;
+    background: #ffe4e6;
+
+    font-size: 28px;
+}
+
+.subject-text {
+    min-width: 0;
+}
+
+.subject-text h3 {
+    margin: 0 0 4px;
+    font-size: 20px;
+}
+
+.subject-text p {
+    margin: 0;
+
+    color: #475569;
+    font-size: 13px;
+
+    overflow-wrap: anywhere;
+}
+
+/* 新規登録の案内 */
+
+.signup-section {
+    margin-top: 28px;
+    margin-bottom: 16px;
+}
+
+.signup-banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+
+    padding: 28px 32px;
+
+    background: var(--light-blue);
+
+    border: 1px solid #bfdbfe;
+    border-radius: 12px;
+}
+
+.signup-banner-text h2 {
+    margin: 0 0 6px;
+    font-size: 23px;
+}
+
+.signup-banner-text p {
+    margin: 0;
+
+    color: #475569;
+    font-size: 14px;
+}
+
+.signup-banner .button {
+    flex-shrink: 0;
+}
+
+/* タブレット */
+
+@media (max-width: 1000px) {
+    .subject-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+/* スマホ */
+
+@media (max-width: 600px) {
+    .page-container {
+        padding: 0 20px;
+    }
+
+    .hero {
+        padding: 40px 20px 36px;
+    }
+
+    .hero-badge {
+        padding: 6px 12px;
+        font-size: 12px;
+    }
+
+    .hero-title {
+        margin-top: 22px;
+
+        font-size: 30px;
+        line-height: 1.5;
+    }
+
+    .hero-description {
+        font-size: 16px;
+    }
+
+    .mobile-break {
+        display: inline;
+    }
+
+    .hero-button {
+        width: 100%;
+        max-width: 350px;
+        min-width: 0;
+
+        font-size: 17px;
+    }
+
+    .hero-note {
+        font-size: 12px;
+    }
+
+    .section-title {
+        margin-bottom: 18px;
+        font-size: 23px;
+    }
+
+    .subject-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .subject-card {
+        min-height: 86px;
+        padding: 16px;
+        gap: 14px;
+    }
+
+    .subject-text h3 {
+        font-size: 18px;
+    }
+
+    .subject-text p {
+        font-size: 12px;
+    }
+
+    .signup-banner {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 20px;
+
+        padding: 24px 20px;
+    }
+
+    .signup-banner-text h2 {
+        font-size: 20px;
+    }
+
+    .signup-banner-text p {
+        font-size: 13px;
+    }
+
+    .signup-banner .button {
+        width: 100%;
+    }
+}

@@ -1,0 +1,120 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        {% block title %}DataQuiz AI{% endblock %}
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="{% static 'quizapp/css/base.css' %}"
+    >
+
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+    <header class="site-header">
+        <div class="header-inner">
+
+            <a
+                class="brand"
+                href="{% url 'quizapp:index' %}"
+                aria-label="DataQuiz AI トップページ"
+            >
+                <span
+                    class="brand-mark"
+                    aria-hidden="true"
+                ></span>
+
+                <span class="brand-name">
+                    DataQuiz AI
+                </span>
+            </a>
+
+            <nav
+                class="header-nav"
+                aria-label="メインメニュー"
+            >
+                {% block header_actions %}
+
+                    {% if user.is_authenticated %}
+
+                        <span class="header-user">
+                            {{ user.username }}さん
+                        </span>
+
+                        <form
+                            method="post"
+                            action="{% url 'accounts:logout' %}"
+                            class="logout-form"
+                        >
+                            {% csrf_token %}
+
+                            <button
+                                type="submit"
+                                class="button button-outline button-small"
+                            >
+                                ログアウト
+                            </button>
+                        </form>
+
+                    {% else %}
+
+                        <a
+                            class="button button-outline button-small"
+                            href="{% url 'accounts:login' %}"
+                        >
+                            ログイン
+                        </a>
+
+                        <a
+                            class="button button-primary button-small header-signup"
+                            href="{% url 'accounts:sign' %}"
+                        >
+                            新規登録
+                        </a>
+
+                    {% endif %}
+
+                {% endblock %}
+            </nav>
+
+        </div>
+    </header>
+
+    <main class="site-main">
+
+        {% if messages %}
+            <div
+                class="message-area"
+                aria-live="polite"
+            >
+                {% for message in messages %}
+                    <p class="message">
+                        {{ message }}
+                    </p>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        {% block content %}{% endblock %}
+
+    </main>
+
+    <footer class="site-footer">
+        <small>DataQuiz AI</small>
+    </footer>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>
