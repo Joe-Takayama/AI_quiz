@@ -126,3 +126,10 @@ LOGOUT_REDIRECT_URL = 'quizapp:index'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+DEFAULT_FROM_EMAIL = 'DataQuiz AI <noreply@example.com>'
+
+PASSWORD_RESET_TIMEOUT = 3600
