@@ -1,45 +1,219 @@
-.page-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 32px;
+/* ==========================
+   TOP画面全体
+   ========================== */
+
+.site-main {
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    padding: 0;
+
+    background: #f8fafc;
 }
 
-/* メインの紹介部分 */
+.quiz-top {
+    padding-bottom: 20px;
+
+    color: #101010;
+    background: #f8fafc;
+}
+
+.quiz-top,
+.quiz-top *,
+.quiz-top *::before,
+.quiz-top *::after {
+    box-sizing: border-box;
+}
+
+.top-icon-definitions {
+    position: absolute;
+
+    width: 0;
+    height: 0;
+
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.page-container {
+    width: 100%;
+    max-width: 1200px;
+
+    margin: 0 auto;
+    padding: 0 24px;
+}
+
+
+/* ==========================
+   TOP画面のヘッダー
+   ========================== */
+
+.header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 20px;
+
+    width: 100%;
+    max-width: 1200px;
+    min-height: 84px;
+
+    margin: 0 auto;
+    padding: 12px 24px;
+
+    box-sizing: border-box;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+
+    min-width: 0;
+    gap: 14px;
+}
+
+.brand-name {
+    color: #101010;
+
+    font-size: 28px;
+    font-weight: 800;
+
+    white-space: nowrap;
+}
+
+.header-nav {
+    display: flex;
+    align-items: center;
+
+    gap: 16px;
+    flex-shrink: 0;
+}
+
+.top-account {
+    display: flex;
+    align-items: center;
+
+    gap: 28px;
+}
+
+.top-account-user {
+    display: flex;
+    align-items: center;
+
+    min-width: 0;
+    gap: 12px;
+}
+
+.account-icon {
+    display: block;
+
+    width: 38px;
+    height: 38px;
+    flex-shrink: 0;
+
+    color: #0094ff;
+}
+
+.top-account-name {
+    display: block;
+
+    max-width: 180px;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    color: #101010;
+
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.top-logout-form {
+    margin: 0;
+}
+
+.top-logout-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-height: 44px;
+    padding: 8px 18px;
+
+    color: #0094ff;
+    background: #ffffff;
+
+    border: 1px solid #0094ff;
+    border-radius: 7px;
+
+    font: inherit;
+    font-size: 17px;
+    font-weight: 700;
+    line-height: 1.4;
+
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.top-logout-button:hover {
+    background: #eff8ff;
+}
+
+
+/* ==========================
+   紹介・挨拶
+   ========================== */
 
 .hero {
-    padding: 64px 20px 48px;
+    padding: 24px 24px 16px;
+
     text-align: center;
 }
 
 .hero-badge {
     display: inline-block;
-    padding: 6px 18px;
 
-    color: #1d4ed8;
-    background: var(--light-blue);
+    padding: 7px 18px;
 
-    border-radius: 999px;
+    color: #0094ff;
+    background: #dbeafe;
 
-    font-size: 14px;
-    font-weight: 700;
+    border-radius: 10px;
+
+    font-size: 17px;
+    line-height: 1.5;
 }
 
 .hero-title {
-    margin: 24px 0 20px;
+    margin: 18px 0 10px;
 
-    font-size: clamp(32px, 4vw, 52px);
-    line-height: 1.4;
+    font-size: clamp(32px, 4vw, 48px);
     font-weight: 800;
+    line-height: 1.35;
     letter-spacing: -0.03em;
+
+    overflow-wrap: anywhere;
+}
+
+.hero-title-login {
+    margin: 8px 0 4px;
+
+    font-size: clamp(30px, 3.8vw, 44px);
+}
+
+.hero-title-login span {
+    display: inline;
 }
 
 .hero-description {
     margin: 0;
 
-    color: #475569;
+    color: #808080;
 
     font-size: 18px;
-    line-height: 1.8;
+    line-height: 1.6;
 }
 
 .mobile-break {
@@ -47,102 +221,154 @@
 }
 
 .hero-button {
-    min-width: 280px;
-    min-height: 56px;
-    margin-top: 28px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 12px;
+
+    min-width: 300px;
+    min-height: 52px;
+
+    margin-top: 10px;
+    padding: 10px 24px;
+
+    color: #ffffff;
+    background: #0094ff;
+
+    border: 1px solid #0094ff;
+    border-radius: 7px;
 
     font-size: 18px;
+    font-weight: 500;
+    line-height: 1.5;
+
+    text-decoration: none;
 }
 
-.hero-note {
-    margin: 12px 0 0;
-
-    color: var(--muted);
-    font-size: 14px;
+.hero-button:hover {
+    color: #ffffff;
+    background: #0084e6;
 }
 
-/* 分野一覧 */
+
+/* ==========================
+   学習成績
+   ========================== */
+
+.summary-section {
+    margin-top: 0;
+    margin-bottom: 8px;
+}
+
+.summary-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+
+    gap: 40px;
+
+    max-width: 1040px;
+    margin: 0 auto;
+}
+
+.summary-card {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 20px;
+
+    min-width: 0;
+    min-height: 100px;
+
+    padding: 12px 16px;
+
+    background: #ffffff;
+
+    border-radius: 8px;
+}
+
+.summary-icon {
+    display: block;
+
+    width: 58px;
+    height: 58px;
+    flex-shrink: 0;
+
+    color: #101010;
+}
+
+.summary-text {
+    min-width: 0;
+
+    text-align: center;
+}
+
+.summary-text h2 {
+    margin: 0 0 4px;
+
+    font-size: 20px;
+    font-weight: 400;
+    line-height: 1.4;
+}
+
+.summary-text p {
+    margin: 0;
+
+    font-size: 28px;
+    font-weight: 800;
+    line-height: 1.3;
+}
+
+
+/* ==========================
+   分野一覧
+   ========================== */
 
 .subjects-section {
-    scroll-margin-top: 24px;
+    scroll-margin-top: 20px;
 }
 
 .section-title {
-    margin: 0 0 24px;
+    margin: 0 0 8px;
 
-    font-size: 26px;
+    font-size: 28px;
+    font-weight: 800;
+    line-height: 1.5;
+
     text-align: center;
 }
 
 .subject-grid {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 20px;
+
+    gap: 14px 24px;
 }
 
 .subject-card {
     display: flex;
     align-items: center;
+
     gap: 16px;
 
-    min-height: 112px;
-    padding: 20px;
+    min-width: 0;
+    min-height: 88px;
 
-    background: var(--surface);
+    padding: 12px 14px;
 
-    border: 1px solid #dbe3ee;
-    border-radius: 12px;
+    background: #ffffff;
+
+    border: 0;
+    border-radius: 8px;
 }
 
 .subject-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: block;
 
     width: 48px;
     height: 48px;
     flex-shrink: 0;
-
-    border-radius: 12px;
-
-    font-size: 20px;
-    font-weight: 800;
-}
-
-.icon-python {
-    color: #2563eb;
-    background: #dbeafe;
-}
-
-.icon-pandas {
-    color: #7c3aed;
-    background: #ede9fe;
-}
-
-.icon-sql {
-    color: #0284c7;
-    background: #e0f2fe;
-
-    font-size: 16px;
-}
-
-.icon-statistics {
-    color: #16a34a;
-    background: #dcfce7;
-
-    font-size: 28px;
-}
-
-.icon-machine {
-    color: #ea580c;
-    background: #ffedd5;
-}
-
-.icon-metrics {
-    color: #e11d48;
-    background: #ffe4e6;
-
-    font-size: 28px;
 }
 
 .subject-text {
@@ -151,48 +377,155 @@
 
 .subject-text h3 {
     margin: 0 0 4px;
-    font-size: 20px;
+
+    font-size: 22px;
+    font-weight: 800;
+    line-height: 1.3;
 }
 
 .subject-text p {
     margin: 0;
 
-    color: #475569;
-    font-size: 13px;
+    color: #808080;
+
+    font-size: 12px;
+    line-height: 1.5;
 
     overflow-wrap: anywhere;
 }
 
-/* 新規登録の案内 */
+.subject-arrow {
+    margin-left: auto;
+
+    flex-shrink: 0;
+
+    font-size: 18px;
+}
+
+
+/* ==========================
+   ログイン後の学習メニュー
+   ========================== */
+
+.learning-section {
+    margin-top: 14px;
+}
+
+.learning-panel {
+    padding: 10px 16px 12px;
+
+    background: #dbeafe;
+
+    border-radius: 8px;
+}
+
+.learning-panel > h2 {
+    margin: 0 0 6px;
+
+    font-size: 23px;
+    font-weight: 800;
+    line-height: 1.4;
+}
+
+.learning-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+
+    gap: 16px;
+}
+
+.learning-card {
+    display: flex;
+    align-items: center;
+
+    gap: 12px;
+
+    min-width: 0;
+    min-height: 46px;
+
+    padding: 6px 12px;
+
+    color: #101010;
+    background: #ffffff;
+
+    border: 0;
+    border-radius: 7px;
+
+    font: inherit;
+    text-align: left;
+    text-decoration: none;
+}
+
+.learning-card:disabled {
+    opacity: 1;
+
+    color: #101010;
+    -webkit-text-fill-color: #101010;
+
+    cursor: default;
+}
+
+.learning-icon {
+    display: block;
+
+    width: 32px;
+    height: 32px;
+    flex-shrink: 0;
+
+    color: #101010;
+}
+
+.learning-label {
+    min-width: 0;
+
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.4;
+
+    overflow-wrap: anywhere;
+}
+
+.learning-arrow {
+    margin-left: auto;
+
+    flex-shrink: 0;
+}
+
+
+/* ==========================
+   ログイン前の新規登録案内
+   ========================== */
 
 .signup-section {
-    margin-top: 28px;
-    margin-bottom: 16px;
+    margin-top: 16px;
 }
 
 .signup-banner {
     display: flex;
     align-items: center;
     justify-content: space-between;
+
     gap: 24px;
 
-    padding: 28px 32px;
+    padding: 20px 24px;
 
-    background: var(--light-blue);
+    background: #dbeafe;
 
     border: 1px solid #bfdbfe;
-    border-radius: 12px;
+    border-radius: 8px;
 }
 
 .signup-banner-text h2 {
     margin: 0 0 6px;
+
     font-size: 23px;
 }
 
 .signup-banner-text p {
     margin: 0;
 
-    color: #475569;
+    color: #808080;
+
     font-size: 14px;
 }
 
@@ -200,39 +533,170 @@
     flex-shrink: 0;
 }
 
-/* タブレット */
 
-@media (max-width: 1000px) {
-    .subject-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
+/* ==========================
+   キーボード操作
+   ========================== */
+
+.top-logout-button:focus-visible,
+.hero-button:focus-visible,
+.learning-card:focus-visible {
+    outline: 3px solid #1d4ed8;
+    outline-offset: 3px;
 }
 
-/* スマホ */
+
+/* ==========================
+   タブレット
+   ========================== */
+
+@media (min-width: 601px) and (max-width: 1000px) {
+
+    .summary-grid {
+        gap: 20px;
+    }
+
+    .summary-card {
+        gap: 12px;
+    }
+
+    .summary-icon {
+        width: 44px;
+        height: 44px;
+    }
+
+    .subject-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+    }
+
+    .learning-grid {
+        gap: 10px;
+    }
+
+    .learning-label {
+        font-size: 13px;
+    }
+
+}
+
+
+/* ==========================
+   スマホ
+   ========================== */
 
 @media (max-width: 600px) {
+
+    .quiz-top {
+        padding-bottom: 10px;
+    }
+
     .page-container {
-        padding: 0 20px;
+        padding: 0 12px;
     }
 
-    .hero {
-        padding: 40px 20px 36px;
+
+    /* ヘッダー */
+
+    .header-inner {
+        min-height: 84px;
+        padding: 8px 12px;
+
+        gap: 10px;
     }
 
-    .hero-badge {
-        padding: 6px 12px;
+    .brand {
+        gap: 7px;
+    }
+
+    .brand-name {
+        font-size: 20px;
+    }
+
+    .brand-mark {
+        flex-shrink: 0;
+    }
+
+    .header-nav {
+        gap: 8px;
+    }
+
+    .header-nav > .button {
+        padding: 7px 9px;
+
         font-size: 12px;
     }
 
-    .hero-title {
-        margin-top: 22px;
+    .top-account {
+        flex-direction: column;
+        align-items: center;
 
-        font-size: 30px;
+        gap: 4px;
+    }
+
+    .top-account-user {
+        gap: 5px;
+    }
+
+    .account-icon {
+        width: 25px;
+        height: 25px;
+    }
+
+    .top-account-name {
+        max-width: 76px;
+
+        font-size: 11px;
+    }
+
+    .top-logout-button {
+        min-height: 28px;
+        padding: 3px 10px;
+
+        border-radius: 6px;
+
+        font-size: 12px;
+    }
+
+
+    /* 挨拶 */
+
+    .hero {
+        padding: 10px 12px 12px;
+    }
+
+    .hero-badge {
+        width: min(100%, 280px);
+
+        padding: 2px 8px;
+
+        border-radius: 7px;
+
+        font-size: 12px;
         line-height: 1.5;
     }
 
+    .hero-title {
+        margin: 12px 0 6px;
+
+        font-size: 26px;
+        line-height: 1.35;
+    }
+
+    .hero-title-login {
+        margin: 10px 0 4px;
+
+        font-size: 24px;
+        line-height: 1.3;
+    }
+
+    .hero-title-login span {
+        display: block;
+    }
+
     .hero-description {
-        font-size: 16px;
+        font-size: 13px;
+        line-height: 1.5;
     }
 
     .mobile-break {
@@ -240,58 +704,233 @@
     }
 
     .hero-button {
-        width: 100%;
-        max-width: 350px;
+        width: min(100%, 280px);
         min-width: 0;
+        min-height: 36px;
 
-        font-size: 17px;
+        margin-top: 4px;
+        padding: 5px 12px;
+
+        border-radius: 7px;
+
+        font-size: 14px;
     }
 
-    .hero-note {
+
+    /* 成績：スマホでも横3列 */
+
+    .summary-section {
+        margin-bottom: 4px;
+    }
+
+    .summary-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+
+        gap: 8px;
+    }
+
+    .summary-card {
+        gap: 6px;
+
+        min-height: 54px;
+        padding: 6px 4px;
+
+        border-radius: 7px;
+    }
+
+    .summary-icon {
+        width: 24px;
+        height: 30px;
+    }
+
+    .summary-text h2 {
+        margin-bottom: 0;
+
         font-size: 12px;
+        line-height: 1.3;
     }
+
+    .summary-text p {
+        font-size: 21px;
+        line-height: 1.2;
+    }
+
+
+    /* 分野：縦1列 */
 
     .section-title {
-        margin-bottom: 18px;
+        margin: 0 0 6px;
+
         font-size: 23px;
+
+        text-align: left;
     }
 
     .subject-grid {
-        grid-template-columns: 1fr;
-        gap: 12px;
+        grid-template-columns: minmax(0, 1fr);
+
+        gap: 7px;
     }
 
     .subject-card {
-        min-height: 86px;
-        padding: 16px;
         gap: 14px;
+
+        min-height: 56px;
+        padding: 7px 12px;
+
+        border-radius: 7px;
+    }
+
+    .subject-icon {
+        width: 38px;
+        height: 38px;
     }
 
     .subject-text h3 {
-        font-size: 18px;
+        margin-bottom: 1px;
+
+        font-size: 17px;
+        line-height: 1.2;
     }
 
     .subject-text p {
-        font-size: 12px;
+        font-size: 10px;
+        line-height: 1.4;
+    }
+
+    .subject-arrow {
+        font-size: 16px;
+    }
+
+
+    /* 学習メニュー：横3列、アイコンが上 */
+
+    .learning-section {
+        margin-top: 12px;
+    }
+
+    .learning-panel {
+        padding: 8px 10px;
+
+        border-radius: 8px;
+    }
+
+    .learning-panel > h2 {
+        margin-bottom: 6px;
+
+        font-size: 16px;
+    }
+
+    .learning-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+
+        gap: 8px;
+    }
+
+    .learning-card {
+        flex-direction: column;
+        justify-content: center;
+
+        gap: 2px;
+
+        min-height: 52px;
+        padding: 4px 2px;
+
+        border-radius: 7px;
+
+        text-align: center;
+    }
+
+    .learning-icon {
+        width: 24px;
+        height: 24px;
+    }
+
+    .learning-label {
+        font-size: 10px;
+        line-height: 1.3;
+    }
+
+    .learning-arrow {
+        display: none;
+    }
+
+
+    /* ログイン前の新規登録案内 */
+
+    .signup-section {
+        margin-top: 12px;
     }
 
     .signup-banner {
         flex-direction: column;
         align-items: stretch;
-        gap: 20px;
 
-        padding: 24px 20px;
+        gap: 12px;
+
+        padding: 14px 12px;
     }
 
     .signup-banner-text h2 {
-        font-size: 20px;
+        font-size: 19px;
     }
 
     .signup-banner-text p {
-        font-size: 13px;
+        font-size: 12px;
     }
 
     .signup-banner .button {
         width: 100%;
     }
+
+}
+
+
+/* ==========================
+   横幅が狭いスマホ
+   ========================== */
+
+@media (max-width: 360px) {
+
+    .brand-name {
+        font-size: 17px;
+    }
+
+    .header-inner {
+        gap: 6px;
+    }
+
+    .page-container {
+        padding: 0 10px;
+    }
+
+    .summary-grid {
+        gap: 6px;
+    }
+
+    .summary-card {
+        gap: 3px;
+    }
+
+    .summary-icon {
+        width: 20px;
+        height: 26px;
+    }
+
+    .summary-text h2 {
+        font-size: 11px;
+    }
+
+    .summary-text p {
+        font-size: 19px;
+    }
+
+    .learning-grid {
+        gap: 6px;
+    }
+
+    .learning-label {
+        font-size: 9px;
+    }
+
 }
