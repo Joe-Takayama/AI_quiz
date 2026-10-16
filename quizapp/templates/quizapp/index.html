@@ -33,12 +33,14 @@
                         stroke="currentColor"
                         stroke-width="2.5"
                     />
+
                     <circle
                         cx="16"
                         cy="12"
                         r="5"
                         fill="currentColor"
                     />
+
                     <path
                         d="M6 26c1-6 5-9 10-9s9 3 10 9"
                         fill="currentColor"
@@ -91,7 +93,8 @@
 
 {% block content %}
 
-    <!-- 各所で使うSVGアイコン -->
+    <!-- 共通のSVGアイコン -->
+
     <svg
         class="top-icon-definitions"
         xmlns="http://www.w3.org/2000/svg"
@@ -101,8 +104,10 @@
 
             <symbol id="top-notebook" viewBox="0 0 48 48">
                 <rect
-                    x="10" y="7"
-                    width="28" height="36"
+                    x="10"
+                    y="7"
+                    width="28"
+                    height="36"
                     rx="4"
                     fill="none"
                     stroke="currentColor"
@@ -188,8 +193,10 @@
                     fill="#45b3e9"
                 />
                 <ellipse
-                    cx="24" cy="12"
-                    rx="17" ry="7"
+                    cx="24"
+                    cy="12"
+                    rx="17"
+                    ry="7"
                     fill="#45b3e9"
                     stroke="#fff"
                     stroke-width="1.5"
@@ -230,14 +237,16 @@
                     stroke-linejoin="round"
                 />
                 <circle
-                    cx="26" cy="20"
+                    cx="26"
+                    cy="20"
                     r="8"
                     fill="none"
                     stroke="#ad45da"
                     stroke-width="2"
                 />
                 <circle
-                    cx="26" cy="20"
+                    cx="26"
+                    cy="20"
                     r="3"
                     fill="none"
                     stroke="#ad45da"
@@ -252,14 +261,18 @@
 
             <symbol id="top-metrics" viewBox="0 0 48 48">
                 <rect
-                    x="9" y="7"
-                    width="30" height="38"
+                    x="9"
+                    y="7"
+                    width="30"
+                    height="38"
                     rx="3"
                     fill="#19bcdf"
                 />
                 <rect
-                    x="18" y="3"
-                    width="12" height="8"
+                    x="18"
+                    y="3"
+                    width="12"
+                    height="8"
                     rx="3"
                     fill="#19bcdf"
                     stroke="#fff"
@@ -331,10 +344,7 @@
 
                     <div class="summary-card">
 
-                        <svg
-                            class="summary-icon"
-                            aria-hidden="true"
-                        >
+                        <svg class="summary-icon" aria-hidden="true">
                             <use href="#top-notebook"></use>
                         </svg>
 
@@ -347,10 +357,7 @@
 
                     <div class="summary-card">
 
-                        <svg
-                            class="summary-icon"
-                            aria-hidden="true"
-                        >
+                        <svg class="summary-icon" aria-hidden="true">
                             <use href="#top-chart"></use>
                         </svg>
 
@@ -363,10 +370,7 @@
 
                     <div class="summary-card">
 
-                        <svg
-                            class="summary-icon"
-                            aria-hidden="true"
-                        >
+                        <svg class="summary-icon" aria-hidden="true">
                             <use href="#top-review"></use>
                         </svg>
 
@@ -389,17 +393,16 @@
             aria-labelledby="subjects-title"
         >
 
-            <h2
-                class="section-title"
-                id="subjects-title"
-            >
+            <h2 class="section-title" id="subjects-title">
                 学べる分野
             </h2>
 
             <div class="subject-grid">
 
-                <article class="subject-card">
-
+                <a
+                    class="subject-card"
+                    href="{% url 'quizapp:quiz_settings' %}?field=python"
+                >
                     <svg class="subject-icon" aria-hidden="true">
                         <use href="#top-python"></use>
                     </svg>
@@ -410,11 +413,12 @@
                     </div>
 
                     <span class="subject-arrow" aria-hidden="true">→</span>
+                </a>
 
-                </article>
-
-                <article class="subject-card">
-
+                <a
+                    class="subject-card"
+                    href="{% url 'quizapp:quiz_settings' %}?field=pandas"
+                >
                     <svg class="subject-icon" aria-hidden="true">
                         <use href="#top-pandas"></use>
                     </svg>
@@ -425,11 +429,12 @@
                     </div>
 
                     <span class="subject-arrow" aria-hidden="true">→</span>
+                </a>
 
-                </article>
-
-                <article class="subject-card">
-
+                <a
+                    class="subject-card"
+                    href="{% url 'quizapp:quiz_settings' %}?field=sql"
+                >
                     <svg class="subject-icon" aria-hidden="true">
                         <use href="#top-database"></use>
                     </svg>
@@ -440,11 +445,12 @@
                     </div>
 
                     <span class="subject-arrow" aria-hidden="true">→</span>
+                </a>
 
-                </article>
-
-                <article class="subject-card">
-
+                <a
+                    class="subject-card"
+                    href="{% url 'quizapp:quiz_settings' %}?field=statistics"
+                >
                     <svg class="subject-icon" aria-hidden="true">
                         <use href="#top-statistics"></use>
                     </svg>
@@ -455,11 +461,12 @@
                     </div>
 
                     <span class="subject-arrow" aria-hidden="true">→</span>
+                </a>
 
-                </article>
-
-                <article class="subject-card">
-
+                <a
+                    class="subject-card"
+                    href="{% url 'quizapp:quiz_settings' %}?field=machine_learning"
+                >
                     <svg class="subject-icon" aria-hidden="true">
                         <use href="#top-machine"></use>
                     </svg>
@@ -470,11 +477,12 @@
                     </div>
 
                     <span class="subject-arrow" aria-hidden="true">→</span>
+                </a>
 
-                </article>
-
-                <article class="subject-card">
-
+                <a
+                    class="subject-card"
+                    href="{% url 'quizapp:quiz_settings' %}?field=metrics"
+                >
                     <svg class="subject-icon" aria-hidden="true">
                         <use href="#top-metrics"></use>
                     </svg>
@@ -485,8 +493,7 @@
                     </div>
 
                     <span class="subject-arrow" aria-hidden="true">→</span>
-
-                </article>
+                </a>
 
             </div>
 
@@ -507,7 +514,6 @@
                             class="learning-card"
                             disabled
                         >
-
                             <svg class="learning-icon" aria-hidden="true">
                                 <use href="#top-notebook"></use>
                             </svg>
@@ -517,7 +523,6 @@
                             <span class="learning-arrow" aria-hidden="true">
                                 →
                             </span>
-
                         </button>
 
                         <button
@@ -525,7 +530,6 @@
                             class="learning-card"
                             disabled
                         >
-
                             <svg class="learning-icon" aria-hidden="true">
                                 <use href="#top-review"></use>
                             </svg>
@@ -537,7 +541,6 @@
                             <span class="learning-arrow" aria-hidden="true">
                                 →
                             </span>
-
                         </button>
 
                         <button
@@ -545,7 +548,6 @@
                             class="learning-card"
                             disabled
                         >
-
                             <svg class="learning-icon" aria-hidden="true">
                                 <use href="#top-star"></use>
                             </svg>
@@ -555,7 +557,6 @@
                             <span class="learning-arrow" aria-hidden="true">
                                 →
                             </span>
-
                         </button>
 
                     </div>
