@@ -1,0 +1,172 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}
+    結果 | DataQuiz AI
+{% endblock %}
+
+{% block extra_css %}
+    <link
+        rel="stylesheet"
+        href="{% static 'css/quiz.css' %}"
+    >
+{% endblock %}
+
+{% block header_actions %}
+    {% include 'quizapp/_quiz_header.html' %}
+{% endblock %}
+
+{% block content %}
+
+    <section class="quiz-page">
+
+        {% include 'quizapp/_quiz_tags.html' %}
+
+        <h1>
+            クイズおつかれさまでした！
+        </h1>
+
+        <p class="quiz-subtitle">
+            今回の学習結果を確認しましょう。
+        </p>
+
+        <div class="quiz-card">
+
+            <h2 class="result-heading">
+                今回の結果
+            </h2>
+
+            <div class="result-stats">
+
+                <div>
+
+                    <h3>正解数</h3>
+
+                    <p>
+                        <strong>
+                            {{ attempt.correct_count }}
+                        </strong>
+                        / {{ attempt.question_count }}問
+                    </p>
+
+                </div>
+
+                <div>
+
+                    <h3>正答率</h3>
+
+                    <p>
+                        <strong>
+                            {{ attempt.accuracy|floatformat:"-1" }}%
+                        </strong>
+                    </p>
+
+                </div>
+
+            </div>
+
+            <progress
+                value="{{ attempt.correct_count }}"
+                max="{{ attempt.question_count }}"
+            >
+                {{ attempt.accuracy }}%
+            </progress>
+
+            <p class="quiz-note">
+                {{ attempt.question_count }}問すべてに回答しました
+            </p>
+
+            <hr>
+
+            <h2 class="small-heading">
+                問題ごとの結果
+            </h2>
+
+            <div class="result-list">
+
+                {% for row in rows %}
+
+                    <div class="result-row">
+
+                        <strong>
+                            第{{ row.number }}問
+                        </strong>
+
+                        <span
+                            class="{% if row.correct %}is-correct{% else %}is-wrong{% endif %}"
+                        >
+                            {% if row.correct %}
+                                ○ 正解
+                            {% else %}
+                                × 不正解
+                            {% endif %}
+                        </span>
+
+                        <a
+                            href="{% url 'quizapp:explanation' attempt.pk row.number %}"
+                        >
+                            解説を見る →
+                        </a>
+
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+            {% if attempt.user_id %}
+
+                <p class="saved-notice">
+                    今回の結果を学習履歴に保存しました。
+                </p>
+
+            {% else %}
+
+                <p class="saved-notice">
+                    ログインすると、次回から学習履歴を保存できます。
+                </p>
+
+            {% endif %}
+
+            <div class="result-actions">
+
+                <form
+                    method="post"
+                    action="{% url 'quizapp:retry' attempt.pk %}"
+                >
+                    {% csrf_token %}
+
+                    <button
+                        type="submit"
+                        class="quiz-primary"
+                    >
+                        もう一度挑戦する
+                    </button>
+
+                </form>
+
+                <a
+                    class="quiz-outline"
+                    href="{% url 'quizapp:index' %}"
+                >
+                    TOPへ戻る
+                </a>
+
+            </div>
+
+            {% if attempt.user_id %}
+
+                <a
+                    class="history-link"
+                    href="{% url 'quizapp:history' %}"
+                >
+                    学習履歴を見る →
+                </a>
+
+            {% endif %}
+
+        </div>
+
+    </section>
+
+{% endblock %}

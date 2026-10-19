@@ -1,0 +1,169 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}
+    問題 | DataQuiz AI
+{% endblock %}
+
+{% block extra_css %}
+    <link
+        rel="stylesheet"
+        href="{% static 'css/quiz.css' %}"
+    >
+{% endblock %}
+
+{% block header_actions %}
+    {% include 'quizapp/_quiz_header.html' %}
+{% endblock %}
+
+{% block content %}
+
+    <section class="quiz-page">
+
+        <a
+            class="quiz-back"
+            href="{% url 'quizapp:quiz_settings' %}?field={{ attempt.field }}"
+        >
+            ← 出題条件に戻る
+        </a>
+
+        {% include 'quizapp/_quiz_tags.html' %}
+
+        <h1>クイズに挑戦</h1>
+
+        <div class="quiz-card">
+
+            <div class="quiz-progress-label">
+
+                <strong>
+                    第{{ number }}問 /
+                    全{{ attempt.question_count }}問
+                </strong>
+
+                <span>
+                    {{ progress }}%
+                </span>
+
+            </div>
+
+            <progress
+                value="{{ number }}"
+                max="{{ attempt.question_count }}"
+            >
+                {{ progress }}%
+            </progress>
+
+            <h2 class="question-text">{{ question.text }}</h2>
+
+            {% if question.code %}
+                <pre class="quiz-code"><code>{{ question.code }}</code></pre>
+            {% endif %}
+
+            <form
+                method="post"
+                id="answer-form"
+            >
+                {% csrf_token %}
+
+                <input
+                    type="hidden"
+                    name="question_index"
+                    value="{{ index }}"
+                >
+
+                <fieldset class="answer-options">
+
+                    <legend>
+                        答えを1つ選んでください
+                    </legend>
+
+                    {% for option in options %}
+
+                        <label class="answer-option">
+
+                            <input
+                                type="radio"
+                                name="choice"
+                                value="{{ option.value }}"
+                                required
+                            >
+
+                            <span class="answer-letter">
+                                {{ option.label }}
+                            </span>
+
+                            <span class="answer-text">{{ option.text }}</span>
+
+                        </label>
+
+                    {% endfor %}
+
+                </fieldset>
+
+                <button
+                    type="submit"
+                    class="quiz-primary"
+                    id="answer-button"
+                >
+                    回答する
+                </button>
+
+                <p class="quiz-note">
+                    回答すると正誤と解説を確認できます。
+                </p>
+
+            </form>
+
+        </div>
+
+    </section>
+
+{% endblock %}
+
+{% block extra_js %}
+
+    <script>
+
+        const answerForm = document.getElementById(
+            'answer-form'
+        );
+
+        const answerButton = document.getElementById(
+            'answer-button'
+        );
+
+        function updateAnswerButton() {
+
+            answerButton.disabled = (
+                !answerForm.querySelector(
+                    'input[name="choice"]:checked'
+                )
+            );
+
+        }
+
+        answerForm.addEventListener(
+            'change',
+            updateAnswerButton
+        );
+
+        window.addEventListener(
+            'pageshow',
+            updateAnswerButton
+        );
+
+        updateAnswerButton();
+
+        answerForm.addEventListener(
+            'submit',
+            () => {
+
+                answerButton.disabled = true;
+                answerButton.textContent = '採点中…';
+
+            }
+        );
+
+    </script>
+
+{% endblock %}

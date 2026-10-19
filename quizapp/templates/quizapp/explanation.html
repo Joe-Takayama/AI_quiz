@@ -1,0 +1,85 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}
+    解説 | DataQuiz AI
+{% endblock %}
+
+{% block extra_css %}
+    <link
+        rel="stylesheet"
+        href="{% static 'css/quiz.css' %}"
+    >
+{% endblock %}
+
+{% block header_actions %}
+    {% include 'quizapp/_quiz_header.html' %}
+{% endblock %}
+
+{% block content %}
+
+    <section class="quiz-page">
+
+        {% include 'quizapp/_quiz_tags.html' %}
+
+        <h1>
+            第{{ number }}問の解説
+        </h1>
+
+        <div class="quiz-card">
+
+            <p
+                class="answer-status {% if is_correct %}is-correct{% else %}is-wrong{% endif %}"
+            >
+                {% if is_correct %}
+                    ○ 正解！
+                {% else %}
+                    × 不正解
+                {% endif %}
+            </p>
+
+            <h2 class="question-text">{{ question.text }}</h2>
+
+            {% if question.code %}
+                <pre class="quiz-code"><code>{{ question.code }}</code></pre>
+            {% endif %}
+
+            <div class="answer-details">
+
+                <p><strong>あなたの回答：</strong>{{ your_answer }}</p>
+
+                <p><strong>正解：</strong>{{ correct_answer }}</p>
+
+            </div>
+
+            <h2 class="small-heading">
+                解説
+            </h2>
+
+            <p class="explanation-text">{{ question.explanation }}</p>
+
+            {% if attempt.completed_at %}
+
+                <a
+                    class="quiz-primary"
+                    href="{% url 'quizapp:result' attempt.pk %}"
+                >
+                    結果を見る →
+                </a>
+
+            {% else %}
+
+                <a
+                    class="quiz-primary"
+                    href="{% url 'quizapp:question' attempt.pk %}"
+                >
+                    次の問題へ →
+                </a>
+
+            {% endif %}
+
+        </div>
+
+    </section>
+
+{% endblock %}

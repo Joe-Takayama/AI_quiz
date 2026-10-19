@@ -1,0 +1,42 @@
+{% if user.is_authenticated %}
+
+    <div class="quiz-account">
+
+        <span class="quiz-user">
+            ◉ {{ user.username }}さん
+        </span>
+
+        <form
+            method="post"
+            action="{% url 'accounts:logout' %}"
+        >
+            {% csrf_token %}
+
+            <button
+                class="quiz-logout"
+                type="submit"
+            >
+                ログアウト
+            </button>
+
+        </form>
+
+    </div>
+
+{% else %}
+
+    <a
+        class="button button-outline button-small"
+        href="{% url 'accounts:login' %}"
+    >
+        ログイン
+    </a>
+
+    <a
+        class="button button-primary button-small header-signup"
+        href="{% url 'accounts:signup' %}"
+    >
+        新規登録
+    </a>
+
+{% endif %}

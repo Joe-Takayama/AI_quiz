@@ -26,16 +26,15 @@
         'settings-summary'
     );
 
+    const startButton = form.querySelector(
+        '.settings-start'
+    );
+
     const difficultyLabels = {
         beginner: '初級',
         intermediate: '中級',
         advanced: '上級',
     };
-
-
-    // ==========================
-    // 選択内容を画面へ反映
-    // ==========================
 
     function updateSummary() {
 
@@ -67,11 +66,6 @@
 
     }
 
-
-    // ==========================
-    // 分野変更時にテーマを切り替える
-    // ==========================
-
     fieldSelect.addEventListener(
         'change',
         () => {
@@ -100,29 +94,36 @@
         }
     );
 
-
-    // ==========================
-    // 各項目の変更時
-    // ==========================
-
     form.addEventListener(
         'change',
+        updateSummary
+    );
+
+    form.addEventListener(
+        'submit',
         () => {
 
-            updateSummary();
+            startButton.disabled = true;
 
-            // 条件を変更したら、前の保存完了表示を消す
-            form.querySelector(
-                '.settings-success'
-            )?.remove();
+            startButton.textContent =
+                'AIが問題を作成しています…';
 
         }
     );
 
+    window.addEventListener(
+        'pageshow',
+        () => {
 
-    // ==========================
-    // 最初に開いたとき
-    // ==========================
+            startButton.disabled = false;
+
+            startButton.textContent =
+                'この条件で始める →';
+
+            updateSummary();
+
+        }
+    );
 
     updateSummary();
 

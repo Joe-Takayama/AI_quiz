@@ -1,0 +1,69 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}
+    学習履歴 | DataQuiz AI
+{% endblock %}
+
+{% block extra_css %}
+    <link
+        rel="stylesheet"
+        href="{% static 'css/quiz.css' %}"
+    >
+{% endblock %}
+
+{% block header_actions %}
+    {% include 'quizapp/_quiz_header.html' %}
+{% endblock %}
+
+{% block content %}
+
+    <section class="quiz-page">
+
+        <a
+            class="quiz-back"
+            href="{% url 'quizapp:index' %}"
+        >
+            ← TOPへ戻る
+        </a>
+
+        <h1>学習履歴</h1>
+
+        <div class="quiz-card">
+
+            {% for item in attempts %}
+
+                <a
+                    class="history-item"
+                    href="{% url 'quizapp:result' item.pk %}"
+                >
+
+                    <span>
+                        {{ item.completed_at|date:"Y/m/d H:i" }}
+                        <br>
+                        {{ item.field_label }}
+                        / {{ item.theme_label }}
+                        / {{ item.difficulty_label }}
+                    </span>
+
+                    <strong>
+                        {{ item.correct_count }}
+                        / {{ item.question_count }}問
+                        ・{{ item.accuracy|floatformat:"-1" }}% →
+                    </strong>
+
+                </a>
+
+            {% empty %}
+
+                <p>
+                    学習履歴はまだありません。
+                </p>
+
+            {% endfor %}
+
+        </div>
+
+    </section>
+
+{% endblock %}
