@@ -116,7 +116,7 @@ WSGI_APPLICATION = 'quizproject.wsgi.application'
 
 # ====================================
 # データベース
-# 前回と同じくDATABASE_URLで切り替える
+# DATABASE_URLがあればSupabaseへ接続
 # ====================================
 
 DATABASE_URL = os.getenv('DATABASE_URL', '').strip()
@@ -217,15 +217,21 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 # ====================================
-# メール
-# Gmail APIの接続は別の工程で設定する
+# Gmail APIによるメール送信
 # ====================================
 
 EMAIL_BACKEND = (
-    'django.core.mail.backends.console.EmailBackend'
+    'accounts.email_backends.GmailEmailBackend'
 )
 
-DEFAULT_FROM_EMAIL = 'DataQuiz AI <noreply@example.com>'
+GMAIL_FROM_EMAIL = os.getenv(
+    'GMAIL_FROM_EMAIL',
+    '',
+).strip()
+
+DEFAULT_FROM_EMAIL = (
+    f'DataQuiz AI <{GMAIL_FROM_EMAIL}>'
+)
 
 PASSWORD_RESET_TIMEOUT = 3600
 
@@ -242,10 +248,6 @@ GEMINI_API_KEY = os.getenv(
 GEMINI_MODEL = os.getenv(
     'GEMINI_MODEL',
     'gemini-3.5-flash-lite',
-)
-
-GMAIL_FROM_EMAIL = os.getenv(
-    "GMAIL_FROM_EMAIL"
 )
 
 
