@@ -173,8 +173,11 @@ cython_debug/
 
 # End of https://www.toptal.com/developers/gitignore/api/django
 
+# 環境変数
+.env
+.env.*
+!.env.example
+
 credentials.json
-token.jsoncredentials.json
 token.json
-credentials.json
-token.json
+staticfiles/

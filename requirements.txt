@@ -2,11 +2,13 @@ Django==5.2.17
 openai
 python-dotenv
 google-genai
+pydantic>=2,<3
 
 psycopg[binary]
 dj-database-url
 gunicorn
 whitenoise
+
 resend
 google-api-python-client
 google-auth-httplib2
