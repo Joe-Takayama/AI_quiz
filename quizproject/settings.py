@@ -244,6 +244,10 @@ GEMINI_MODEL = os.getenv(
     'gemini-3.5-flash-lite',
 )
 
+GMAIL_FROM_EMAIL = os.getenv(
+    "GMAIL_FROM_EMAIL"
+)
+
 
 # ====================================
 # RenderのHTTPS設定
