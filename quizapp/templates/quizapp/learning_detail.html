@@ -1,0 +1,98 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}
+    保存した問題 | DataQuiz AI
+{% endblock %}
+
+{% block extra_css %}
+    <link
+        rel="stylesheet"
+        href="{% static 'css/learning.css' %}"
+    >
+{% endblock %}
+
+{% block content %}
+<section class="learning-page">
+
+    <div class="learning-container learning-narrow">
+
+        <a
+            class="learning-back"
+            href="{% url 'quizapp:favorites' %}"
+        >
+            ← お気に入りへ戻る
+        </a>
+
+        <header class="learning-heading">
+            <h1>保存した問題</h1>
+        </header>
+
+        <article class="learning-panel">
+
+            <div class="learning-tags">
+                <span>{{ item.field_label }}</span>
+                <span>{{ item.theme_label }}</span>
+
+                <span class="learning-difficulty">
+                    {{ item.difficulty_label }}
+                </span>
+            </div>
+
+            <h2 class="learning-question-text">
+                {{ question.text }}
+            </h2>
+
+            {% if question.code %}
+                <pre class="learning-code"><code>{{ question.code }}</code></pre>
+            {% endif %}
+
+            <ol class="learning-choice-list" type="A">
+                {% for choice in question.choices %}
+                    <li>{{ choice }}</li>
+                {% endfor %}
+            </ol>
+
+            <div class="learning-correct-answer">
+                <strong>正解：{{ correct_answer }}</strong>
+            </div>
+
+            <h3>解説</h3>
+
+            <p class="learning-explanation">
+                {{ question.explanation }}
+            </p>
+
+            <form
+                method="post"
+                action="{% url 'quizapp:learning_start' %}"
+            >
+                {% csrf_token %}
+
+                <input
+                    type="hidden"
+                    name="mode"
+                    value="favorite"
+                >
+
+                <input
+                    type="hidden"
+                    name="item_id"
+                    value="{{ item.pk }}"
+                >
+
+                <button
+                    class="learning-primary"
+                    type="submit"
+                >
+                    この問題に再挑戦 →
+                </button>
+
+            </form>
+
+        </article>
+
+    </div>
+
+</section>
+{% endblock %}

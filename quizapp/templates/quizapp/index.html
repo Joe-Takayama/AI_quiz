@@ -94,7 +94,6 @@
 {% block content %}
 
     <!-- 共通のSVGアイコン -->
-
     <svg
         class="top-icon-definitions"
         xmlns="http://www.w3.org/2000/svg"
@@ -104,11 +103,8 @@
 
             <symbol id="top-notebook" viewBox="0 0 48 48">
                 <rect
-                    x="10"
-                    y="7"
-                    width="28"
-                    height="36"
-                    rx="4"
+                    x="10" y="7"
+                    width="28" height="36" rx="4"
                     fill="none"
                     stroke="currentColor"
                     stroke-width="2"
@@ -193,10 +189,7 @@
                     fill="#45b3e9"
                 />
                 <ellipse
-                    cx="24"
-                    cy="12"
-                    rx="17"
-                    ry="7"
+                    cx="24" cy="12" rx="17" ry="7"
                     fill="#45b3e9"
                     stroke="#fff"
                     stroke-width="1.5"
@@ -237,17 +230,13 @@
                     stroke-linejoin="round"
                 />
                 <circle
-                    cx="26"
-                    cy="20"
-                    r="8"
+                    cx="26" cy="20" r="8"
                     fill="none"
                     stroke="#ad45da"
                     stroke-width="2"
                 />
                 <circle
-                    cx="26"
-                    cy="20"
-                    r="3"
+                    cx="26" cy="20" r="3"
                     fill="none"
                     stroke="#ad45da"
                     stroke-width="2"
@@ -261,19 +250,13 @@
 
             <symbol id="top-metrics" viewBox="0 0 48 48">
                 <rect
-                    x="9"
-                    y="7"
-                    width="30"
-                    height="38"
-                    rx="3"
+                    x="9" y="7"
+                    width="30" height="38" rx="3"
                     fill="#19bcdf"
                 />
                 <rect
-                    x="18"
-                    y="3"
-                    width="12"
-                    height="8"
-                    rx="3"
+                    x="18" y="3"
+                    width="12" height="8" rx="3"
                     fill="#19bcdf"
                     stroke="#fff"
                     stroke-width="1.5"
@@ -339,7 +322,6 @@
                 class="summary-section page-container"
                 aria-label="学習成績"
             >
-
                 <div class="summary-grid">
 
                     <div class="summary-card">
@@ -382,7 +364,6 @@
                     </div>
 
                 </div>
-
             </section>
 
         {% endif %}
@@ -517,17 +498,18 @@
                                 <use href="#top-notebook"></use>
                             </svg>
 
-                            <span class="learning-label">学習履歴</span>
+                            <span class="learning-label">
+                                学習履歴
+                            </span>
 
                             <span class="learning-arrow" aria-hidden="true">
                                 →
                             </span>
                         </a>
 
-                        <button
-                            type="button"
+                        <a
                             class="learning-card"
-                            disabled
+                            href="{% url 'quizapp:review' %}"
                         >
                             <svg class="learning-icon" aria-hidden="true">
                                 <use href="#top-review"></use>
@@ -540,23 +522,24 @@
                             <span class="learning-arrow" aria-hidden="true">
                                 →
                             </span>
-                        </button>
+                        </a>
 
-                        <button
-                            type="button"
+                        <a
                             class="learning-card"
-                            disabled
+                            href="{% url 'quizapp:favorites' %}"
                         >
                             <svg class="learning-icon" aria-hidden="true">
                                 <use href="#top-star"></use>
                             </svg>
 
-                            <span class="learning-label">お気に入り</span>
+                            <span class="learning-label">
+                                お気に入り
+                            </span>
 
                             <span class="learning-arrow" aria-hidden="true">
                                 →
                             </span>
-                        </button>
+                        </a>
 
                     </div>
 

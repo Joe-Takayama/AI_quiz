@@ -1,0 +1,331 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}
+    {% if is_review %}
+        間違えた問題の復習
+    {% else %}
+        お気に入り
+    {% endif %}
+    | DataQuiz AI
+{% endblock %}
+
+{% block extra_css %}
+    <link
+        rel="stylesheet"
+        href="{% static 'css/learning.css' %}"
+    >
+{% endblock %}
+
+{% block content %}
+<section class="learning-page">
+
+    <div class="learning-container">
+
+        <a
+            class="learning-back"
+            href="{% url 'quizapp:index' %}"
+        >
+            ← TOPへ戻る
+        </a>
+
+        <header class="learning-heading">
+
+            <h1>
+                {% if is_review %}
+                    間違えた問題の復習
+                {% else %}
+                    <span aria-hidden="true">☆</span>
+                    お気に入り
+                {% endif %}
+            </h1>
+
+            <p>
+                {% if is_review %}
+                    間違えた問題にもう一度挑戦しよう。
+                {% else %}
+                    保存した問題を見返して、理解を深めよう。
+                {% endif %}
+            </p>
+
+        </header>
+
+        <div class="learning-summary">
+
+            <div class="learning-summary-info">
+
+                <span
+                    class="learning-summary-icon"
+                    aria-hidden="true"
+                >
+                    {% if is_review %}⟳{% else %}★{% endif %}
+                </span>
+
+                <div>
+                    <p>
+                        {% if is_review %}
+                            復習する問題
+                        {% else %}
+                            保存した問題
+                        {% endif %}
+                    </p>
+
+                    <strong>{{ item_count }}問</strong>
+                </div>
+
+            </div>
+
+            <form
+                method="post"
+                action="{% url 'quizapp:learning_start' %}"
+            >
+                {% csrf_token %}
+
+                <input
+                    type="hidden"
+                    name="mode"
+                    value="{{ mode }}"
+                >
+
+                <input
+                    type="hidden"
+                    name="field"
+                    value="{{ selected_field }}"
+                >
+
+                <button
+                    class="learning-primary"
+                    type="submit"
+                    {% if not item_count %}disabled{% endif %}
+                >
+                    {% if is_review %}
+                        まとめて復習する →
+                    {% else %}
+                        まとめて挑戦する →
+                    {% endif %}
+                </button>
+
+            </form>
+
+        </div>
+
+        <form method="get" class="learning-filter">
+
+            <label for="learning-field">分野</label>
+
+            <select
+                id="learning-field"
+                name="field"
+            >
+                <option value="">全ての分野</option>
+
+                {% for key, config in quiz_fields.items %}
+                    <option
+                        value="{{ key }}"
+                        {% if selected_field == key %}selected{% endif %}
+                    >
+                        {{ config.label }}
+                    </option>
+                {% endfor %}
+            </select>
+
+            <button
+                type="submit"
+                class="learning-filter-button"
+            >
+                表示
+            </button>
+
+        </form>
+
+        <div class="learning-list">
+
+            {% for item in items %}
+
+                <article class="learning-item">
+
+                    <div class="learning-subject">
+
+                        <span
+                            class="learning-subject-icon"
+                            aria-hidden="true"
+                        >
+                            {% if item.field == 'python' %}
+                                🐍
+                            {% elif item.field == 'pandas' %}
+                                ▥
+                            {% elif item.field == 'sql' %}
+                                🛢
+                            {% elif item.field == 'statistics' %}
+                                📊
+                            {% elif item.field == 'machine_learning' %}
+                                ⚙
+                            {% else %}
+                                ☑
+                            {% endif %}
+                        </span>
+
+                        <h2>{{ item.field_label }}</h2>
+
+                    </div>
+
+                    <div class="learning-item-content">
+
+                        <div class="learning-tags">
+                            <span>{{ item.theme_label }}</span>
+
+                            <span class="learning-difficulty">
+                                {{ item.difficulty_label }}
+                            </span>
+                        </div>
+
+                        <p class="learning-question-text">
+                            {{ item.question.text }}
+                        </p>
+
+                        {% if is_review %}
+
+                            <div class="learning-answer-row">
+
+                                <div class="learning-wrong-answer">
+                                    <small>前回のあなたの回答</small>
+
+                                    <strong>
+                                        {{ item.previous_answer }}
+                                    </strong>
+                                </div>
+
+                                <p class="learning-date">
+                                    前回の回答：
+                                    {{ item.last_answered_at|date:"Y/m/d" }}
+                                </p>
+
+                            </div>
+
+                        {% else %}
+
+                            <p class="learning-date">
+                                保存日：
+                                {{ item.favorited_at|date:"Y/m/d" }}
+                            </p>
+
+                        {% endif %}
+
+                    </div>
+
+                    <div class="learning-item-actions">
+
+                        {% if is_review %}
+
+                            <form
+                                method="post"
+                                action="{% url 'quizapp:learning_start' %}"
+                            >
+                                {% csrf_token %}
+
+                                <input
+                                    type="hidden"
+                                    name="mode"
+                                    value="review"
+                                >
+
+                                <input
+                                    type="hidden"
+                                    name="item_id"
+                                    value="{{ item.pk }}"
+                                >
+
+                                <button
+                                    type="submit"
+                                    class="learning-outline"
+                                >
+                                    この問題に再挑戦 →
+                                </button>
+
+                            </form>
+
+                        {% else %}
+
+                            <form
+                                method="post"
+                                action="{% url 'quizapp:favorite_remove' item.pk %}"
+                            >
+                                {% csrf_token %}
+
+                                <button
+                                    class="learning-remove"
+                                    type="submit"
+                                    aria-label="{{ item.field_label }}の問題をお気に入りから解除"
+                                >
+                                    <span aria-hidden="true">★</span>
+                                    解除
+                                </button>
+
+                            </form>
+
+                            <a
+                                class="learning-outline"
+                                href="{% url 'quizapp:favorite_detail' item.pk %}"
+                            >
+                                問題・解説を見る →
+                            </a>
+
+                        {% endif %}
+
+                    </div>
+
+                </article>
+
+            {% empty %}
+
+                <div class="learning-empty">
+
+                    {% if selected_field %}
+
+                        <p>
+                            この分野に該当する問題はありません。
+                        </p>
+
+                    {% elif is_review %}
+
+                        <h2>復習する問題はありません</h2>
+
+                        <p>
+                            間違えた問題がここに表示されます。
+                        </p>
+
+                    {% else %}
+
+                        <h2>お気に入りはまだありません</h2>
+
+                        <p>
+                            解説画面から問題を保存できます。
+                        </p>
+
+                    {% endif %}
+
+                    <a
+                        class="learning-outline"
+                        href="{% url 'quizapp:index' %}"
+                    >
+                        TOPへ戻る
+                    </a>
+
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+</section>
+
+<script>
+    document
+        .getElementById('learning-field')
+        .addEventListener('change', function () {
+            this.form.requestSubmit();
+        });
+</script>
+{% endblock %}

@@ -1,0 +1,739 @@
+/* ====================================
+   全体
+==================================== */
+
+.learning-page {
+    min-height: 100%;
+    padding: 24px 24px 32px;
+
+    color: #111827;
+    background: #b4e1e7;
+
+    --learning-blue: #0095ff;
+}
+
+.site-main:has(.learning-page) {
+    display: flex;
+    flex-direction: column;
+    background: #b4e1e7;
+}
+
+.learning-page {
+    flex: 1;
+}
+
+.learning-container {
+    width: 100%;
+    max-width: 1120px;
+    margin: 0 auto;
+}
+
+.learning-narrow {
+    max-width: 800px;
+}
+
+.learning-back {
+    display: inline-block;
+    margin-bottom: 8px;
+
+    color: #008cff;
+    font-size: 14px;
+    text-decoration: none;
+}
+
+.learning-heading {
+    margin-bottom: 24px;
+    text-align: center;
+}
+
+.learning-heading h1 {
+    margin: 0;
+    font-size: clamp(24px, 3vw, 38px);
+    font-weight: 800;
+    line-height: 1.4;
+}
+
+.learning-heading p {
+    margin: 4px 0 0;
+    color: #6b7280;
+    font-size: 16px;
+}
+
+/* ====================================
+   件数・まとめて挑戦
+==================================== */
+
+.learning-summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+
+    padding: 20px 28px;
+
+    background: #fff;
+    border-radius: 8px;
+}
+
+.learning-summary-info {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+}
+
+.learning-summary-icon {
+    font-size: 58px;
+    line-height: 1;
+}
+
+.learning-summary-info p {
+    margin: 0 0 4px;
+    font-size: 16px;
+}
+
+.learning-summary-info strong {
+    font-size: 30px;
+}
+
+.learning-summary form {
+    margin: 0;
+}
+
+.learning-summary .learning-primary {
+    min-width: 290px;
+}
+
+/* ====================================
+   ボタン
+==================================== */
+
+.learning-primary,
+.learning-outline {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    min-height: 48px;
+    padding: 12px 20px;
+
+    border: 1px solid transparent;
+    border-radius: 6px;
+
+    font: inherit;
+    font-weight: 700;
+    line-height: 1.5;
+    text-align: center;
+    text-decoration: none;
+
+    cursor: pointer;
+}
+
+.learning-primary {
+    color: #fff;
+    background: var(--learning-blue, #0095ff);
+}
+
+.learning-primary:hover {
+    background: #007ee0;
+}
+
+.learning-primary:disabled {
+    opacity: 0.45;
+    cursor: default;
+}
+
+.learning-outline {
+    color: #008cff;
+    background: #fff;
+    border-color: #60a5fa;
+}
+
+.learning-outline:hover {
+    background: #eff6ff;
+}
+
+.learning-full {
+    width: 100%;
+}
+
+.learning-primary:focus-visible,
+.learning-outline:focus-visible,
+.learning-remove:focus-visible,
+.learning-filter select:focus-visible,
+.learning-filter-button:focus-visible {
+    outline: 3px solid #2563eb;
+    outline-offset: 3px;
+}
+
+/* ====================================
+   分野フィルター
+==================================== */
+
+.learning-filter {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    margin: 18px 0;
+}
+
+.learning-filter label {
+    font-size: 22px;
+    font-weight: 800;
+}
+
+.learning-filter select {
+    width: 280px;
+    min-width: 0;
+    padding: 7px 12px;
+
+    color: #111827;
+    background: #fff;
+
+    border: 0;
+    border-radius: 6px;
+
+    font: inherit;
+    text-align: center;
+}
+
+.learning-filter-button {
+    padding: 7px 14px;
+
+    border: 1px solid #60a5fa;
+    border-radius: 6px;
+
+    color: #008cff;
+    background: #fff;
+
+    font: inherit;
+    cursor: pointer;
+}
+
+/* ====================================
+   問題一覧
+==================================== */
+
+.learning-list {
+    display: grid;
+    gap: 12px;
+}
+
+.learning-item {
+    display: grid;
+    grid-template-columns: 190px minmax(0, 1fr) 220px;
+    align-items: center;
+    gap: 20px;
+
+    padding: 18px 20px;
+
+    background: #fff;
+    border-radius: 8px;
+}
+
+.learning-subject {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+
+    min-width: 0;
+}
+
+.learning-subject-icon {
+    flex-shrink: 0;
+    color: #38bdf8;
+    font-size: 30px;
+}
+
+.learning-subject h2 {
+    margin: 0;
+
+    font-size: 25px;
+    line-height: 1.4;
+
+    overflow-wrap: anywhere;
+}
+
+.learning-item-content {
+    min-width: 0;
+}
+
+.learning-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+
+    margin-bottom: 10px;
+}
+
+.learning-tags span {
+    display: inline-block;
+    padding: 2px 16px;
+
+    border-radius: 999px;
+
+    color: #008cff;
+    background: #add8ff;
+
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.learning-tags .learning-difficulty {
+    color: #229f52;
+    background: #9de3b0;
+}
+
+.learning-question-text {
+    margin: 8px 0 12px;
+
+    font-size: 17px;
+    font-weight: 700;
+
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+.learning-answer-row {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.learning-wrong-answer {
+    min-width: 160px;
+    max-width: 100%;
+    padding: 6px 12px;
+
+    color: #ef2929;
+    background: #ffdfdf;
+
+    border-radius: 5px;
+    overflow-wrap: anywhere;
+}
+
+.learning-wrong-answer small,
+.learning-wrong-answer strong {
+    display: block;
+}
+
+.learning-wrong-answer small {
+    font-size: 11px;
+}
+
+.learning-date {
+    margin: 8px 0 0;
+
+    color: #777;
+    font-size: 12px;
+}
+
+.learning-item-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 12px;
+}
+
+.learning-item-actions form {
+    margin: 0;
+}
+
+.learning-item-actions .learning-outline {
+    width: 100%;
+    font-size: 14px;
+}
+
+.learning-item-actions > form {
+    width: 100%;
+}
+
+.learning-remove {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 6px;
+
+    margin-left: auto;
+    padding: 0;
+
+    border: 0;
+
+    color: #111;
+    background: transparent;
+
+    font: inherit;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.learning-remove span {
+    font-size: 34px;
+    line-height: 1;
+}
+
+.learning-empty {
+    padding: 40px 20px;
+
+    background: #fff;
+    border-radius: 8px;
+
+    text-align: center;
+}
+
+.learning-empty h2 {
+    font-size: 22px;
+}
+
+.learning-empty p {
+    margin-bottom: 24px;
+    color: #64748b;
+}
+
+/* ====================================
+   問題・解説・結果
+==================================== */
+
+.learning-panel {
+    padding: 28px;
+
+    background: #fff;
+    border-radius: 10px;
+}
+
+.learning-code {
+    overflow-x: auto;
+    padding: 18px;
+
+    background: #f1f5f9;
+    border-radius: 8px;
+
+    font-size: 15px;
+    tab-size: 4;
+}
+
+.learning-choice-list {
+    padding-left: 28px;
+}
+
+.learning-choice-list li {
+    padding: 8px;
+    overflow-wrap: anywhere;
+}
+
+.learning-correct-answer {
+    margin: 20px 0;
+    padding: 16px;
+
+    color: #15803d;
+    background: #dcfce7;
+
+    border-radius: 8px;
+    overflow-wrap: anywhere;
+}
+
+.learning-explanation {
+    margin-bottom: 28px;
+
+    line-height: 1.9;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+.learning-progress {
+    margin-top: 0;
+    color: #64748b;
+    font-weight: 700;
+}
+
+.learning-options {
+    display: grid;
+    gap: 12px;
+
+    margin: 24px 0;
+    padding: 0;
+
+    border: 0;
+    min-width: 0;
+}
+
+.learning-options legend {
+    margin-bottom: 12px;
+    font-weight: 700;
+}
+
+.learning-option {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+
+    padding: 16px;
+
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+
+    cursor: pointer;
+}
+
+.learning-option input {
+    margin-top: 5px;
+    accent-color: #0095ff;
+}
+
+.learning-option span {
+    min-width: 0;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+.learning-option:has(input:checked) {
+    border-color: #0095ff;
+    background: #eff6ff;
+}
+
+.learning-option:has(input:focus-visible) {
+    outline: 3px solid #93c5fd;
+    outline-offset: 3px;
+}
+
+.learning-feedback {
+    font-size: 28px;
+    font-weight: 800;
+}
+
+.learning-feedback.is-correct {
+    color: #16a34a;
+}
+
+.learning-feedback.is-wrong {
+    color: #dc2626;
+}
+
+.learning-result {
+    text-align: center;
+}
+
+.learning-result > strong {
+    display: block;
+    font-size: 42px;
+}
+
+/* ====================================
+   タブレット
+==================================== */
+
+@media (max-width: 1000px) {
+
+    .learning-item {
+        grid-template-columns: 140px minmax(0, 1fr);
+    }
+
+    .learning-item-actions {
+        grid-column: 2;
+        flex-direction: row;
+        justify-content: flex-end;
+        align-items: center;
+    }
+
+    .learning-item-actions > form {
+        width: auto;
+    }
+
+    .learning-subject h2 {
+        font-size: 21px;
+    }
+}
+
+/* ====================================
+   スマートフォン
+==================================== */
+
+@media (max-width: 600px) {
+
+    .learning-page {
+        padding: 14px 16px 24px;
+    }
+
+    .learning-back {
+        font-size: 11px;
+    }
+
+    .learning-heading {
+        margin-bottom: 16px;
+    }
+
+    .learning-heading h1 {
+        font-size: 24px;
+    }
+
+    .learning-heading p {
+        font-size: 12px;
+    }
+
+    .learning-summary {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+
+        padding: 14px 16px;
+    }
+
+    .learning-summary-info {
+        gap: 14px;
+    }
+
+    .learning-summary-icon {
+        font-size: 36px;
+    }
+
+    .learning-summary-info p {
+        margin-bottom: 0;
+        font-size: 12px;
+    }
+
+    .learning-summary-info strong {
+        font-size: 24px;
+    }
+
+    .learning-summary .learning-primary {
+        width: 100%;
+        min-width: 0;
+        min-height: 38px;
+        padding: 8px 12px;
+
+        font-size: 13px;
+    }
+
+    .learning-filter {
+        gap: 8px;
+        margin: 14px 0;
+    }
+
+    .learning-filter label {
+        flex-shrink: 0;
+        font-size: 17px;
+    }
+
+    .learning-filter select {
+        flex: 1;
+        width: auto;
+        font-size: 13px;
+    }
+
+    .learning-filter-button {
+        padding: 7px 9px;
+        font-size: 12px;
+    }
+
+    .learning-list {
+        gap: 16px;
+    }
+
+    .learning-item {
+        position: relative;
+
+        grid-template-columns: minmax(0, 1fr);
+        gap: 10px;
+
+        padding: 16px;
+    }
+
+    .learning-subject {
+        gap: 10px;
+        padding-right: 65px;
+    }
+
+    .learning-subject h2 {
+        font-size: 20px;
+    }
+
+    .learning-subject-icon {
+        font-size: 25px;
+    }
+
+    .learning-tags {
+        gap: 8px;
+        margin-bottom: 10px;
+    }
+
+    .learning-tags span {
+        padding: 2px 10px;
+        font-size: 11px;
+    }
+
+    .learning-question-text {
+        font-size: 14px;
+    }
+
+    .learning-answer-row {
+        align-items: center;
+        gap: 8px;
+    }
+
+    .learning-wrong-answer {
+        min-width: 0;
+        flex: 1;
+        padding: 6px 8px;
+    }
+
+    .learning-wrong-answer small {
+        font-size: 10px;
+    }
+
+    .learning-wrong-answer strong {
+        font-size: 13px;
+    }
+
+    .learning-date {
+        font-size: 10px;
+    }
+
+    .learning-item-actions {
+        grid-column: auto;
+        display: block;
+    }
+
+    .learning-item-actions > form {
+        width: 100%;
+    }
+
+    .learning-item-actions .learning-outline {
+        width: 100%;
+        min-height: 38px;
+        padding: 8px;
+
+        font-size: 12px;
+    }
+
+    .learning-remove {
+        position: absolute;
+        top: 16px;
+        right: 16px;
+
+        gap: 4px;
+        font-size: 11px;
+    }
+
+    .learning-remove span {
+        font-size: 25px;
+    }
+
+    .learning-panel {
+        padding: 20px 16px;
+    }
+
+    .learning-option {
+        padding: 12px;
+        font-size: 14px;
+    }
+
+    .learning-explanation {
+        font-size: 14px;
+    }
+
+    .learning-empty h2 {
+        font-size: 19px;
+    }
+}

@@ -1,0 +1,192 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}
+    再挑戦 | DataQuiz AI
+{% endblock %}
+
+{% block extra_css %}
+    <link
+        rel="stylesheet"
+        href="{% static 'css/learning.css' %}"
+    >
+{% endblock %}
+
+{% block content %}
+<section class="learning-page">
+
+    <div class="learning-container learning-narrow">
+
+        <a
+            class="learning-back"
+            href="{% url back_url %}"
+        >
+            ← 一覧へ戻る
+        </a>
+
+        <header class="learning-heading">
+
+            <h1>
+                {% if stage == 'result' %}
+                    おつかれさまでした！
+                {% elif run.mode == 'review' %}
+                    間違えた問題の復習
+                {% else %}
+                    お気に入りから挑戦
+                {% endif %}
+            </h1>
+
+        </header>
+
+        <div class="learning-panel">
+
+            {% if stage == 'result' %}
+
+                <div class="learning-result">
+
+                    <p>正答数</p>
+
+                    <strong>
+                        {{ correct_count }} / {{ total }}問
+                    </strong>
+
+                    <p>
+                        正答率
+                        {{ accuracy|floatformat:"-1" }}%
+                    </p>
+
+                    <p>
+                        正解した問題は復習リストから外れます。
+                    </p>
+
+                    <a
+                        class="learning-primary"
+                        href="{% url back_url %}"
+                    >
+                        一覧へ戻る
+                    </a>
+
+                </div>
+
+            {% else %}
+
+                <p class="learning-progress">
+                    第{{ number }}問 / 全{{ total }}問
+                </p>
+
+                <div class="learning-tags">
+                    <span>{{ item.field_label }}</span>
+                    <span>{{ item.theme_label }}</span>
+
+                    <span class="learning-difficulty">
+                        {{ item.difficulty_label }}
+                    </span>
+                </div>
+
+                {% if stage == 'feedback' %}
+
+                    <p
+                        class="learning-feedback {% if is_correct %}is-correct{% else %}is-wrong{% endif %}"
+                    >
+                        {% if is_correct %}
+                            ○ 正解！
+                        {% else %}
+                            × 不正解
+                        {% endif %}
+                    </p>
+
+                {% endif %}
+
+                <h2 class="learning-question-text">
+                    {{ question.text }}
+                </h2>
+
+                {% if question.code %}
+                    <pre class="learning-code"><code>{{ question.code }}</code></pre>
+                {% endif %}
+
+                {% if stage == 'question' %}
+
+                    <form method="post">
+
+                        {% csrf_token %}
+
+                        <input
+                            type="hidden"
+                            name="question_index"
+                            value="{{ index }}"
+                        >
+
+                        <fieldset class="learning-options">
+
+                            <legend>回答を選んでください</legend>
+
+                            {% for option in options %}
+
+                                <label class="learning-option">
+
+                                    <input
+                                        type="radio"
+                                        name="choice"
+                                        value="{{ option.value }}"
+                                        required
+                                    >
+
+                                    <strong>
+                                        {{ option.label }}
+                                    </strong>
+
+                                    <span>{{ option.text }}</span>
+
+                                </label>
+
+                            {% endfor %}
+
+                        </fieldset>
+
+                        <button
+                            type="submit"
+                            class="learning-primary learning-full"
+                        >
+                            回答する
+                        </button>
+
+                    </form>
+
+                {% else %}
+
+                    <p>あなたの回答：{{ your_answer }}</p>
+
+                    <div class="learning-correct-answer">
+                        <strong>
+                            正解：{{ correct_answer }}
+                        </strong>
+                    </div>
+
+                    <h3>解説</h3>
+
+                    <p class="learning-explanation">
+                        {{ question.explanation }}
+                    </p>
+
+                    <a
+                        class="learning-primary"
+                        href="{% url 'quizapp:learning_play' run.id %}"
+                    >
+                        {% if number == total %}
+                            結果を見る →
+                        {% else %}
+                            続ける →
+                        {% endif %}
+                    </a>
+
+                {% endif %}
+
+            {% endif %}
+
+        </div>
+
+    </div>
+
+</section>
+{% endblock %}

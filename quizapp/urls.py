@@ -1,51 +1,126 @@
 from django.urls import path
 
-from . import views
+from .views import (
+    IndexView,
+    QuizSettingsView,
+    QuestionView,
+    ExplanationView,
+    ResultView,
+    RetryView,
+    HistoryView,
+)
+
+from .learning_views import (
+    LearningListView,
+    FavoriteSaveView,
+    FavoriteRemoveView,
+    FavoriteDetailView,
+    LearningStartView,
+    LearningPlayView,
+)
 
 
 app_name = 'quizapp'
 
 
 urlpatterns = [
+
+    # TOP
     path(
         '',
-        views.IndexView.as_view(),
+        IndexView.as_view(),
         name='index',
     ),
 
+    # 出題条件
     path(
         'settings/',
-        views.QuizSettingsView.as_view(),
+        QuizSettingsView.as_view(),
         name='quiz_settings',
     ),
 
+    # 問題
     path(
         'question/<uuid:attempt_id>/',
-        views.QuestionView.as_view(),
+        QuestionView.as_view(),
         name='question',
     ),
 
+    # 解説
     path(
         'explanation/<uuid:attempt_id>/<int:number>/',
-        views.ExplanationView.as_view(),
+        ExplanationView.as_view(),
         name='explanation',
     ),
 
+    # 結果
     path(
         'result/<uuid:attempt_id>/',
-        views.ResultView.as_view(),
+        ResultView.as_view(),
         name='result',
     ),
 
+    # 同じ問題に再挑戦
     path(
         'retry/<uuid:attempt_id>/',
-        views.RetryView.as_view(),
+        RetryView.as_view(),
         name='retry',
     ),
 
+    # 学習履歴
     path(
         'history/',
-        views.HistoryView.as_view(),
+        HistoryView.as_view(),
         name='history',
     ),
+
+    # 間違えた問題の復習
+    path(
+        'review/',
+        LearningListView.as_view(mode='review'),
+        name='review',
+    ),
+
+    # お気に入り一覧
+    path(
+        'favorites/',
+        LearningListView.as_view(mode='favorite'),
+        name='favorites',
+    ),
+
+    # お気に入り登録
+    path(
+        'favorites/save/<uuid:attempt_id>/<int:number>/',
+        FavoriteSaveView.as_view(),
+        name='favorite_save',
+    ),
+
+    # お気に入り解除
+    path(
+        'favorites/<int:pk>/remove/',
+        FavoriteRemoveView.as_view(),
+        name='favorite_remove',
+    ),
+
+    # 保存した問題・解説
+    path(
+        'favorites/<int:pk>/',
+        FavoriteDetailView.as_view(),
+        name='favorite_detail',
+    ),
+
+    # 復習・お気に入りから再挑戦を開始
+    path(
+        'learning/start/',
+        LearningStartView.as_view(),
+        name='learning_start',
+    ),
+
+    # 再挑戦の問題・解説・結果
+    path(
+        'learning/play/<uuid:run_id>/',
+        LearningPlayView.as_view(),
+        name='learning_play',
+    ),
+
 ]

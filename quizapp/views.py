@@ -14,7 +14,11 @@ from django.utils.decorators import method_decorator
 from django.views import View
 
 from .forms import QuizSettingsForm
-from .models import QuizAttempt
+from .learning import (
+    get_learning_question,
+    sync_learning_questions,
+)
+from .models import QuizAttempt, LearningQuestion
 from .quiz_config import QUIZ_FIELDS
 from .services.ai import (
     generate_questions,
@@ -22,21 +26,15 @@ from .services.ai import (
 )
 
 
-# ==========================
+# ====================================
 # クイズの挑戦記録を作成
-# ==========================
+# ====================================
 
-def create_attempt(
-    request,
-    selected,
-    questions,
-):
+def create_attempt(request, selected, questions):
 
     if 'quiz_owner' not in request.session:
 
-        request.session['quiz_owner'] = (
-            uuid.uuid4().hex
-        )
+        request.session['quiz_owner'] = uuid.uuid4().hex
 
     return QuizAttempt.objects.create(
         user=(
@@ -44,20 +42,15 @@ def create_attempt(
             if request.user.is_authenticated
             else None
         ),
-
-        session_token=(
-            request.session['quiz_owner']
-        ),
-
+        session_token=request.session['quiz_owner'],
         questions=questions,
-
         **selected,
     )
 
 
-# ==========================
-# 自分のクイズだけ取得する共通処理
-# ==========================
+# ====================================
+# 自分のクイズだけ取得
+# ====================================
 
 class QuizAccessMixin:
 
@@ -68,9 +61,7 @@ class QuizAccessMixin:
         lock=False,
     ):
 
-        token = request.session.get(
-            'quiz_owner'
-        )
+        token = request.session.get('quiz_owner')
 
         allowed = Q(pk__in=[])
 
@@ -83,20 +74,13 @@ class QuizAccessMixin:
 
         if request.user.is_authenticated:
 
-            allowed |= Q(
-                user=request.user,
-            )
+            allowed |= Q(user=request.user)
 
-        queryset = (
-            QuizAttempt.objects
-            .filter(allowed)
-        )
+        queryset = QuizAttempt.objects.filter(allowed)
 
         if lock:
 
-            queryset = (
-                queryset.select_for_update()
-            )
+            queryset = queryset.select_for_update()
 
         return get_object_or_404(
             queryset,
@@ -104,9 +88,9 @@ class QuizAccessMixin:
         )
 
 
-# ==========================
+# ====================================
 # TOP画面
-# ==========================
+# ====================================
 
 class IndexView(View):
 
@@ -114,23 +98,29 @@ class IndexView(View):
 
         total = 0
         correct = 0
+        review_count = 0
 
         if request.user.is_authenticated:
 
-            stats = (
-                QuizAttempt.objects
-                .filter(
-                    user=request.user,
-                    completed_at__isnull=False,
-                )
-                .aggregate(
-                    total=Sum('question_count'),
-                    correct=Sum('correct_count'),
-                )
+            stats = QuizAttempt.objects.filter(
+                user=request.user,
+                completed_at__isnull=False,
+            ).aggregate(
+                total=Sum('question_count'),
+                correct=Sum('correct_count'),
             )
 
             total = stats['total'] or 0
             correct = stats['correct'] or 0
+
+            # 通常クイズの履歴を復習用データへ反映する。
+            sync_learning_questions(request.user)
+
+            # 復習して正解した問題は、この件数から外れる。
+            review_count = LearningQuestion.objects.filter(
+                user=request.user,
+                needs_review=True,
+            ).count()
 
         context = {
             'answered_count': total,
@@ -141,7 +131,7 @@ class IndexView(View):
                 else 0
             ),
 
-            'review_count': total - correct,
+            'review_count': review_count,
         }
 
         return render(
@@ -151,26 +141,21 @@ class IndexView(View):
         )
 
 
-# ==========================
-# 出題条件選択
-# ==========================
+# ====================================
+# 出題条件選択画面
+# ====================================
 
 class QuizSettingsView(View):
 
     def get(self, request):
 
-        field = request.GET.get(
-            'field',
-            'python',
-        )
+        field = request.GET.get('field', 'python')
 
         if field not in QUIZ_FIELDS:
 
             field = 'python'
 
-        first_theme = (
-            QUIZ_FIELDS[field]['themes'][0][0]
-        )
+        first_theme = QUIZ_FIELDS[field]['themes'][0][0]
 
         form = QuizSettingsForm(
             initial={
@@ -181,16 +166,11 @@ class QuizSettingsView(View):
             }
         )
 
-        return self.render_page(
-            request,
-            form,
-        )
+        return self.render_page(request, form)
 
     def post(self, request):
 
-        form = QuizSettingsForm(
-            request.POST
-        )
+        form = QuizSettingsForm(request.POST)
 
         if form.is_valid():
 
@@ -202,10 +182,7 @@ class QuizSettingsView(View):
 
             except QuizGenerationError as exc:
 
-                form.add_error(
-                    None,
-                    str(exc),
-                )
+                form.add_error(None, str(exc))
 
             else:
 
@@ -220,16 +197,9 @@ class QuizSettingsView(View):
                     attempt_id=attempt.pk,
                 )
 
-        return self.render_page(
-            request,
-            form,
-        )
+        return self.render_page(request, form)
 
-    def render_page(
-        self,
-        request,
-        form,
-    ):
+    def render_page(self, request, form):
 
         return render(
             request,
@@ -241,20 +211,13 @@ class QuizSettingsView(View):
         )
 
 
-# ==========================
+# ====================================
 # 問題・回答
-# ==========================
+# ====================================
 
-class QuestionView(
-    QuizAccessMixin,
-    View,
-):
+class QuestionView(QuizAccessMixin, View):
 
-    def get(
-        self,
-        request,
-        attempt_id,
-    ):
+    def get(self, request, attempt_id):
 
         attempt = self.get_attempt(
             request,
@@ -270,14 +233,12 @@ class QuestionView(
 
         index = len(attempt.answers)
 
-        question = (
-            attempt.questions[index]
-        )
+        question = attempt.questions[index]
 
-        # 正解と解説は、回答前の画面へ渡さない。
+        # 回答前の画面に正解・解説を渡さない。
         public_question = {
             'text': question['text'],
-            'code': question['code'],
+            'code': question.get('code', ''),
         }
 
         options = [
@@ -286,37 +247,29 @@ class QuestionView(
                 'label': 'ABCD'[i],
                 'text': text,
             }
-            for i, text in enumerate(
-                question['choices']
-            )
+            for i, text
+            in enumerate(question['choices'])
         ]
-
-        context = {
-            'attempt': attempt,
-            'question': public_question,
-            'options': options,
-
-            'index': index,
-            'number': index + 1,
-
-            'progress': round(
-                (index + 1)
-                / attempt.question_count
-                * 100
-            ),
-        }
 
         return render(
             request,
             'quizapp/question.html',
-            context,
+            {
+                'attempt': attempt,
+                'question': public_question,
+                'options': options,
+                'index': index,
+                'number': index + 1,
+
+                'progress': round(
+                    (index + 1)
+                    / attempt.question_count
+                    * 100
+                ),
+            },
         )
 
-    def post(
-        self,
-        request,
-        attempt_id,
-    ):
+    def post(self, request, attempt_id):
 
         with transaction.atomic():
 
@@ -336,10 +289,7 @@ class QuestionView(
             try:
 
                 choice = int(
-                    request.POST.get(
-                        'choice',
-                        '',
-                    )
+                    request.POST.get('choice', '')
                 )
 
                 index = int(
@@ -349,18 +299,14 @@ class QuestionView(
                     )
                 )
 
-            except (
-                TypeError,
-                ValueError,
-            ):
+            except (TypeError, ValueError):
 
                 return redirect(
                     'quizapp:question',
                     attempt_id=attempt.pk,
                 )
 
-            # 同じ回答の再送で次の問題まで
-            # 回答済みにならないように確認する。
+            # 古い回答の再送で、次の問題を回答済みにしない。
             if (
                 choice not in range(4)
                 or index != len(attempt.answers)
@@ -371,35 +317,45 @@ class QuestionView(
                     attempt_id=attempt.pk,
                 )
 
-            attempt.answers = [
-                *attempt.answers,
+            old_answers = attempt.answers
+
+            new_answers = [
+                *old_answers,
                 choice,
             ]
 
-            if (
-                len(attempt.answers)
-                == attempt.question_count
-            ):
+            correct_count = attempt.correct_count
+            completed_at = attempt.completed_at
 
-                attempt.correct_count = sum(
+            if len(new_answers) == attempt.question_count:
+
+                correct_count = sum(
                     answer == question['correct_index']
                     for answer, question in zip(
-                        attempt.answers,
+                        new_answers,
                         attempt.questions,
                     )
                 )
 
-                attempt.completed_at = (
-                    timezone.now()
-                )
+                completed_at = timezone.now()
 
-            attempt.save(
-                update_fields=[
-                    'answers',
-                    'correct_count',
-                    'completed_at',
-                ]
+            # 同じ状態からの二重更新を防ぐ。
+            updated = QuizAttempt.objects.filter(
+                pk=attempt.pk,
+                answers=old_answers,
+                completed_at__isnull=True,
+            ).update(
+                answers=new_answers,
+                correct_count=correct_count,
+                completed_at=completed_at,
             )
+
+            if not updated:
+
+                return redirect(
+                    'quizapp:question',
+                    attempt_id=attempt.pk,
+                )
 
         return redirect(
             'quizapp:explanation',
@@ -408,14 +364,11 @@ class QuestionView(
         )
 
 
-# ==========================
+# ====================================
 # 正誤・解説
-# ==========================
+# ====================================
 
-class ExplanationView(
-    QuizAccessMixin,
-    View,
-):
+class ExplanationView(QuizAccessMixin, View):
 
     def get(
         self,
@@ -429,19 +382,29 @@ class ExplanationView(
             attempt_id,
         )
 
-        if not (
-            1 <= number <= len(attempt.answers)
-        ):
+        if not 1 <= number <= len(attempt.answers):
 
             raise Http404
 
-        question = (
-            attempt.questions[number - 1]
+        question = attempt.questions[number - 1]
+        answer = attempt.answers[number - 1]
+
+        can_favorite = (
+            request.user.is_authenticated
+            and attempt.user_id == request.user.pk
         )
 
-        answer = (
-            attempt.answers[number - 1]
-        )
+        is_favorite = False
+
+        if can_favorite:
+
+            learning_question = get_learning_question(
+                request.user,
+                attempt,
+                number - 1,
+            )
+
+            is_favorite = learning_question.is_favorite
 
         context = {
             'attempt': attempt,
@@ -449,19 +412,17 @@ class ExplanationView(
             'number': number,
 
             'is_correct': (
-                answer
-                == question['correct_index']
+                answer == question['correct_index']
             ),
 
-            'your_answer': (
-                question['choices'][answer]
-            ),
+            'your_answer': question['choices'][answer],
 
-            'correct_answer': (
-                question['choices'][
-                    question['correct_index']
-                ]
-            ),
+            'correct_answer': question['choices'][
+                question['correct_index']
+            ],
+
+            'can_favorite': can_favorite,
+            'is_favorite': is_favorite,
         }
 
         return render(
@@ -471,20 +432,13 @@ class ExplanationView(
         )
 
 
-# ==========================
-# 結果
-# ==========================
+# ====================================
+# 結果画面
+# ====================================
 
-class ResultView(
-    QuizAccessMixin,
-    View,
-):
+class ResultView(QuizAccessMixin, View):
 
-    def get(
-        self,
-        request,
-        attempt_id,
-    ):
+    def get(self, request, attempt_id):
 
         attempt = self.get_attempt(
             request,
@@ -501,9 +455,9 @@ class ResultView(
         rows = [
             {
                 'number': i + 1,
+
                 'correct': (
-                    answer
-                    == question['correct_index']
+                    answer == question['correct_index']
                 ),
             }
             for i, (question, answer) in enumerate(
@@ -524,20 +478,13 @@ class ResultView(
         )
 
 
-# ==========================
+# ====================================
 # 同じ問題へもう一度挑戦
-# ==========================
+# ====================================
 
-class RetryView(
-    QuizAccessMixin,
-    View,
-):
+class RetryView(QuizAccessMixin, View):
 
-    def post(
-        self,
-        request,
-        attempt_id,
-    ):
+    def post(self, request, attempt_id):
 
         old = self.get_attempt(
             request,
@@ -573,24 +520,18 @@ class RetryView(
         )
 
 
-# ==========================
-# 学習履歴
-# ==========================
+# ====================================
+# 学習履歴画面
+# ====================================
 
-@method_decorator(
-    login_required,
-    name='dispatch',
-)
+@method_decorator(login_required, name='dispatch')
 class HistoryView(View):
 
     def get(self, request):
 
-        attempts = (
-            QuizAttempt.objects
-            .filter(
-                user=request.user,
-                completed_at__isnull=False,
-            )
+        attempts = QuizAttempt.objects.filter(
+            user=request.user,
+            completed_at__isnull=False,
         )
 
         return render(

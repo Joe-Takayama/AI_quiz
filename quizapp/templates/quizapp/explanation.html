@@ -10,6 +10,27 @@
         rel="stylesheet"
         href="{% static 'css/quiz.css' %}"
     >
+
+    <style>
+        .explanation-favorite-area {
+            margin: 24px 0;
+        }
+
+        .explanation-favorite-form {
+            margin: 0;
+        }
+
+        .explanation-favorite-button {
+            width: 100%;
+            min-height: 48px;
+        }
+
+        .explanation-favorite-saved {
+            color: #111827;
+            background: #fef9c3;
+            border-color: #eab308;
+        }
+    </style>
 {% endblock %}
 
 {% block header_actions %}
@@ -38,7 +59,9 @@
                 {% endif %}
             </p>
 
-            <h2 class="question-text">{{ question.text }}</h2>
+            <h2 class="question-text">
+                {{ question.text }}
+            </h2>
 
             {% if question.code %}
                 <pre class="quiz-code"><code>{{ question.code }}</code></pre>
@@ -46,9 +69,15 @@
 
             <div class="answer-details">
 
-                <p><strong>あなたの回答：</strong>{{ your_answer }}</p>
+                <p>
+                    <strong>あなたの回答：</strong>
+                    {{ your_answer }}
+                </p>
 
-                <p><strong>正解：</strong>{{ correct_answer }}</p>
+                <p>
+                    <strong>正解：</strong>
+                    {{ correct_answer }}
+                </p>
 
             </div>
 
@@ -57,6 +86,43 @@
             </h2>
 
             <p class="explanation-text">{{ question.explanation }}</p>
+
+            {% if can_favorite %}
+
+                <div class="explanation-favorite-area">
+
+                    {% if is_favorite %}
+
+                        <a
+                            class="button button-outline explanation-favorite-button explanation-favorite-saved"
+                            href="{% url 'quizapp:favorites' %}"
+                        >
+                            ★ お気に入りに保存済み
+                        </a>
+
+                    {% else %}
+
+                        <form
+                            method="post"
+                            action="{% url 'quizapp:favorite_save' attempt.pk number %}"
+                            class="explanation-favorite-form"
+                        >
+                            {% csrf_token %}
+
+                            <button
+                                type="submit"
+                                class="button button-outline explanation-favorite-button"
+                            >
+                                ☆ お気に入りに保存
+                            </button>
+
+                        </form>
+
+                    {% endif %}
+
+                </div>
+
+            {% endif %}
 
             {% if attempt.completed_at %}
 
