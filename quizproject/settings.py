@@ -14,7 +14,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 load_dotenv(BASE_DIR / '.env')
 
-IS_RENDER = os.getenv('RENDER', '').lower() == 'true'
+IS_RENDER = (
+    os.getenv('RENDER', '').strip().lower() == 'true'
+)
+
+IS_PRODUCTION = (
+    IS_RENDER
+    or os.getenv('APP_ENV', '').strip().lower() == 'production'
+)
 
 
 # ====================================
@@ -24,25 +31,47 @@ IS_RENDER = os.getenv('RENDER', '').lower() == 'true'
 SECRET_KEY = os.getenv('SECRET_KEY')
 
 if not SECRET_KEY:
-
     raise ImproperlyConfigured(
-        '.envまたはRenderの環境変数に'
+        '.envまたはデプロイ先の環境変数に'
         'SECRET_KEYを設定してください。'
     )
 
 
 # ====================================
-# デバッグ
-# ローカルでは有効、Renderでは無効
+# デバッグ・アクセス許可
+# ローカルでは有効、本番では無効
 # ====================================
 
-DEBUG = not IS_RENDER
-
+DEBUG = not IS_PRODUCTION
 
 ALLOWED_HOSTS = [
     '.onrender.com',
     'localhost',
     '127.0.0.1',
+]
+
+if IS_PRODUCTION:
+    ALLOWED_HOSTS.append('.belmo.io')
+
+# デプロイ先から渡されたホスト名も追加する。
+# 複数指定する場合はカンマで区切る。
+extra_hosts = os.getenv('ALLOWED_HOSTS', '')
+
+ALLOWED_HOSTS.extend(
+    host.strip()
+    for host in extra_hosts.split(',')
+    if host.strip()
+)
+
+# 必要に応じて環境変数から追加できる。
+# 指定例：https://アプリのドメイン
+CSRF_TRUSTED_ORIGINS = [
+    origin.strip()
+    for origin in os.getenv(
+        'CSRF_TRUSTED_ORIGINS',
+        '',
+    ).split(',')
+    if origin.strip()
 ]
 
 
@@ -93,13 +122,10 @@ TEMPLATES = [
         'BACKEND': (
             'django.template.backends.django.DjangoTemplates'
         ),
-
         'DIRS': [
             BASE_DIR / 'templates',
         ],
-
         'APP_DIRS': True,
-
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.request',
@@ -122,7 +148,6 @@ WSGI_APPLICATION = 'quizproject.wsgi.application'
 DATABASE_URL = os.getenv('DATABASE_URL', '').strip()
 
 if DATABASE_URL:
-
     DATABASES = {
         'default': dj_database_url.parse(
             DATABASE_URL,
@@ -131,15 +156,13 @@ if DATABASE_URL:
         ),
     }
 
-elif IS_RENDER:
-
+elif IS_PRODUCTION:
     raise ImproperlyConfigured(
-        'Renderの環境変数に'
+        'デプロイ先の環境変数に'
         'SupabaseのDATABASE_URLを設定してください。'
     )
 
 else:
-
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
@@ -212,7 +235,6 @@ LOGIN_REDIRECT_URL = 'quizapp:index'
 
 LOGOUT_REDIRECT_URL = 'quizapp:index'
 
-
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
@@ -252,11 +274,11 @@ GEMINI_MODEL = os.getenv(
 
 
 # ====================================
-# RenderのHTTPS設定
+# 本番環境のHTTPS設定
+# Render・Belmo共通
 # ====================================
 
-if IS_RENDER:
-
+if IS_PRODUCTION:
     SECURE_PROXY_SSL_HEADER = (
         'HTTP_X_FORWARDED_PROTO',
         'https',

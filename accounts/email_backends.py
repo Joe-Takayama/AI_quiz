@@ -1,5 +1,7 @@
 import base64
+import json
 import logging
+import os
 
 from pathlib import Path
 from smtplib import SMTPException
@@ -21,6 +23,41 @@ SCOPES = [
 
 class GmailEmailBackend(BaseEmailBackend):
 
+    def get_credentials(self):
+
+        # Renderでは、従来のSecret Filesを優先する。
+        render_token_path = Path('/etc/secrets/token.json')
+
+        if render_token_path.is_file():
+            return Credentials.from_authorized_user_file(
+                str(render_token_path),
+                SCOPES,
+            )
+
+        # Belmoでは、環境変数から認証情報を読み込む。
+        token_json = os.getenv(
+            'GMAIL_TOKEN_JSON',
+            '',
+        ).strip()
+
+        if token_json:
+            token_info = json.loads(token_json)
+
+            return Credentials.from_authorized_user_info(
+                token_info,
+                SCOPES,
+            )
+
+        # 自分のPCでは、manage.pyと同じ場所を使う。
+        local_token_path = (
+            settings.BASE_DIR / 'token.json'
+        )
+
+        return Credentials.from_authorized_user_file(
+            str(local_token_path),
+            SCOPES,
+        )
+
     def send_messages(self, email_messages):
 
         messages = [
@@ -35,35 +72,16 @@ class GmailEmailBackend(BaseEmailBackend):
         sent_count = 0
 
         try:
-
             if not getattr(settings, 'GMAIL_FROM_EMAIL', ''):
-
                 raise ValueError(
                     'GMAIL_FROM_EMAIL is missing'
                 )
 
-            # RenderではSecret Filesを使う。
-            token_path = Path('/etc/secrets/token.json')
-
-            # 自分のPCではmanage.pyと同じ場所を使う。
-            if not token_path.is_file():
-
-                token_path = (
-                    settings.BASE_DIR / 'token.json'
-                )
-
-            credentials = (
-                Credentials.from_authorized_user_file(
-                    str(token_path),
-                    SCOPES,
-                )
-            )
+            credentials = self.get_credentials()
 
             # アクセストークンが無効なら更新する。
             if not credentials.valid:
-
                 if not credentials.refresh_token:
-
                     raise ValueError(
                         'refresh_token is missing'
                     )
@@ -78,7 +96,6 @@ class GmailEmailBackend(BaseEmailBackend):
             ) as service:
 
                 for message in messages:
-
                     encoded_message = (
                         base64.urlsafe_b64encode(
                             message.message().as_bytes()
@@ -95,7 +112,6 @@ class GmailEmailBackend(BaseEmailBackend):
                     sent_count += 1
 
         except Exception as exc:
-
             # 認証情報やリセットURLはログへ出さない。
             status = getattr(
                 getattr(exc, 'resp', None),
@@ -110,8 +126,7 @@ class GmailEmailBackend(BaseEmailBackend):
             )
 
             if not self.fail_silently:
-
-                # 今のviews.pyの例外処理で受け取れる形にする。
+                # 今のviews.pyで受け取れる例外にする。
                 raise SMTPException(
                     'Gmail APIでメールを送信できませんでした。'
                 ) from None
