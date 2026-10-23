@@ -138,10 +138,19 @@ def answer_question(question, field, quiz_context=''):
             '質問を入力してください。'
         )
 
+    # まず、利用者の質問から教材を探す。
     sources = search_materials(
         question=question,
         field=field,
     )
+
+    # 見つからなければ、表示中の問題も手掛かりにする。
+    if not sources and quiz_context:
+
+        sources = search_materials(
+            question=f'{question}\n{quiz_context}',
+            field=field,
+        )
 
     # 教材が見つからなければ、APIを呼ばずに返す。
     if not sources:
