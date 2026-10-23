@@ -147,7 +147,14 @@ WSGI_APPLICATION = 'quizproject.wsgi.application'
 
 DATABASE_URL = os.getenv('DATABASE_URL', '').strip()
 
-if DATABASE_URL:
+if IS_PRODUCTION:
+
+    if not DATABASE_URL:
+        raise ImproperlyConfigured(
+            'デプロイ先の環境変数に'
+            'SupabaseのDATABASE_URLを設定してください。'
+        )
+
     DATABASES = {
         'default': dj_database_url.parse(
             DATABASE_URL,
@@ -156,20 +163,14 @@ if DATABASE_URL:
         ),
     }
 
-elif IS_PRODUCTION:
-    raise ImproperlyConfigured(
-        'デプロイ先の環境変数に'
-        'SupabaseのDATABASE_URLを設定してください。'
-    )
-
 else:
+
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
             'NAME': BASE_DIR / 'db.sqlite3',
         },
     }
-
 
 # ====================================
 # パスワード検証

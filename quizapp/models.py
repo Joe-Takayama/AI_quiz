@@ -202,3 +202,54 @@ class LearningRun(models.Model):
     answers = models.JSONField(default=list)
 
     created_at = models.DateTimeField(auto_now_add=True)
+
+
+    # ====================================
+# AIが参考にする教材
+# ====================================
+
+class LearningMaterial(models.Model):
+
+    title = models.CharField(
+        '教材名',
+        max_length=200,
+    )
+
+    field = models.CharField(
+        '分野',
+        max_length=40,
+        choices=[
+            (key, value['label'])
+            for key, value in QUIZ_FIELDS.items()
+        ],
+    )
+
+    content = models.TextField(
+        '教材本文',
+    )
+
+    is_active = models.BooleanField(
+        'AIの参照に使用する',
+        default=True,
+    )
+
+    created_at = models.DateTimeField(
+        '登録日時',
+        auto_now_add=True,
+    )
+
+    updated_at = models.DateTimeField(
+        '更新日時',
+        auto_now=True,
+    )
+
+    class Meta:
+
+        verbose_name = '学習教材'
+        verbose_name_plural = '学習教材'
+
+        ordering = ['-created_at']
+
+    def __str__(self):
+
+        return self.title
