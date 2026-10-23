@@ -13,11 +13,17 @@ from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views import View
 
-from .forms import QuizSettingsForm
+from .forms import QuizSettingsForm, AIQuestionForm
 from .learning import (
     get_learning_question,
     sync_learning_questions,
 )
+
+from .services.rag import (
+    answer_question,
+    RagAnswerError,
+)
+
 from .models import QuizAttempt, LearningQuestion
 from .quiz_config import QUIZ_FIELDS
 from .services.ai import (
@@ -370,23 +376,104 @@ class QuestionView(QuizAccessMixin, View):
 
 class ExplanationView(QuizAccessMixin, View):
 
-    def get(
-        self,
-        request,
-        attempt_id,
-        number,
-    ):
+    # ====================================
+    # 解説画面を表示
+    # ====================================
+
+    def get(self, request, attempt_id, number):
+
+        context = self.get_context(
+            request,
+            attempt_id,
+            number,
+        )
+
+        context['ai_form'] = AIQuestionForm()
+
+        return self.render_page(
+            request,
+            context,
+        )
+
+    # ====================================
+    # 質問を受け取ってAIが回答
+    # ====================================
+
+    def post(self, request, attempt_id, number):
+
+        context = self.get_context(
+            request,
+            attempt_id,
+            number,
+        )
+
+        form = AIQuestionForm(request.POST)
+
+        context['ai_form'] = form
+
+        if form.is_valid():
+
+            question = context['question']
+
+            choices_text = '\n'.join(
+                f"{'ABCD'[index]}: {choice}"
+                for index, choice in enumerate(
+                    question['choices']
+                )
+            )
+
+            quiz_context = (
+                f"問題文: {question['text']}\n"
+                f"コード:\n{question.get('code', '')}\n"
+                f"選択肢:\n{choices_text}\n"
+                f"利用者の回答: {context['your_answer']}\n"
+                f"クイズ上の正解: {context['correct_answer']}\n"
+                f"元の解説: {question['explanation']}"
+            )
+
+            try:
+
+                result = answer_question(
+                    question=form.cleaned_data['question'],
+                    field=context['attempt'].field,
+                    quiz_context=quiz_context,
+                )
+
+            except RagAnswerError as exc:
+
+                form.add_error(
+                    None,
+                    str(exc),
+                )
+
+            else:
+
+                context['ai_answer'] = result['answer']
+
+                context['ai_sources'] = result['sources']
+
+        return self.render_page(
+            request,
+            context,
+        )
+
+    # ====================================
+    # 解説画面で使う情報を準備
+    # ====================================
+
+    def get_context(self, request, attempt_id, number):
 
         attempt = self.get_attempt(
             request,
             attempt_id,
         )
 
+        # 回答済みの問題だけ解説を表示できる。
         if not 1 <= number <= len(attempt.answers):
-
             raise Http404
 
         question = attempt.questions[number - 1]
+
         answer = attempt.answers[number - 1]
 
         can_favorite = (
@@ -406,7 +493,7 @@ class ExplanationView(QuizAccessMixin, View):
 
             is_favorite = learning_question.is_favorite
 
-        context = {
+        return {
             'attempt': attempt,
             'question': question,
             'number': number,
@@ -425,12 +512,17 @@ class ExplanationView(QuizAccessMixin, View):
             'is_favorite': is_favorite,
         }
 
+    # ====================================
+    # 画面を表示
+    # ====================================
+
+    def render_page(self, request, context):
+
         return render(
             request,
             'quizapp/explanation.html',
             context,
         )
-
 
 # ====================================
 # 結果画面

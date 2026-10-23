@@ -81,3 +81,37 @@ class QuizSettingsForm(forms.Form):
         self.fields['theme'].choices = (
             field_config.get('themes', [])
         )
+
+
+# ====================================
+# 解説画面からAIに質問するフォーム
+# ====================================
+
+class AIQuestionForm(forms.Form):
+
+    question = forms.CharField(
+        label='この問題についてAIに質問',
+
+        max_length=1000,
+
+        strip=True,
+
+        widget=forms.Textarea(
+            attrs={
+                'class': 'ai-question-input',
+                'rows': 3,
+                'placeholder': (
+                    '例：appendの使い方を'
+                    '具体例で教えてください'
+                ),
+                'maxlength': 1000,
+            },
+        ),
+
+        error_messages={
+            'required': '質問を入力してください。',
+            'max_length': (
+                '質問は1000文字以内で入力してください。'
+            ),
+        },
+    )
