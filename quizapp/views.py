@@ -3,7 +3,7 @@ import uuid
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
 from django.db.models import Q, Sum
-from django.http import Http404
+from django.http import Http404, JsonResponse
 from django.shortcuts import (
     render,
     redirect,
@@ -29,6 +29,11 @@ from .quiz_config import QUIZ_FIELDS
 from .services.ai import (
     generate_questions,
     QuizGenerationError,
+)
+
+from .services.hints import (
+    generate_hint,
+    HintGenerationError,
 )
 
 
@@ -633,3 +638,83 @@ class HistoryView(View):
                 'attempts': attempts,
             },
         )
+
+
+# ====================================
+# 回答前のヒント
+# ====================================
+
+class HintView(QuizAccessMixin, View):
+
+    def post(self, request, attempt_id):
+
+        attempt = self.get_attempt(
+            request,
+            attempt_id,
+        )
+
+        try:
+
+            index = int(
+                request.POST.get('question_index', '')
+            )
+
+        except (TypeError, ValueError):
+
+            return JsonResponse(
+                {'error': '問題番号が正しくありません。'},
+                status=400,
+            )
+
+        # 今取り組んでいる未回答の問題だけ対象にする。
+        if (
+            attempt.completed_at
+            or index != len(attempt.answers)
+            or not 0 <= index < len(attempt.questions)
+        ):
+
+            return JsonResponse(
+                {
+                    'error': (
+                        '問題の状態が変わりました。'
+                        '画面を再読み込みしてください。'
+                    ),
+                },
+                status=409,
+            )
+
+        # 同じ問題で再度押した場合は、前のヒントを返す。
+        saved = request.session.get('quiz_hint', {})
+
+        if (
+            saved.get('attempt_id') == str(attempt.pk)
+            and saved.get('index') == index
+            and saved.get('text')
+        ):
+
+            return JsonResponse({
+                'hint': saved['text'],
+            })
+
+        try:
+
+            hint = generate_hint(
+                attempt.questions[index]
+            )
+
+        except HintGenerationError as exc:
+
+            return JsonResponse(
+                {'error': str(exc)},
+                status=503,
+            )
+
+        request.session['quiz_hint'] = {
+            'attempt_id': str(attempt.pk),
+            'index': index,
+            'text': hint,
+        }
+
+        return JsonResponse({
+            'hint': hint,
+        })

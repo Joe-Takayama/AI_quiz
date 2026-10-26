@@ -114,9 +114,68 @@
 
             </form>
 
+            <div class="hint-area">
+
+                <button
+                    type="button"
+                    class="button button-outline"
+                    id="hint-button"
+                    data-url="{% url 'quizapp:hint' attempt.pk %}"
+                    aria-controls="hint-box"
+                    aria-expanded="false"
+                >
+                    ヒントを見る
+                </button>
+
+                <div
+                    id="hint-box"
+                    class="hint-box"
+                    aria-live="polite"
+                    hidden
+                ></div>
+
+            </div>
+
         </div>
 
     </section>
+
+    <style>
+        .hint-area {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        #hint-button {
+            width: 100%;
+            min-height: 46px;
+            cursor: pointer;
+        }
+
+        #hint-button:disabled {
+            opacity: 0.6;
+            cursor: wait;
+        }
+
+        .hint-box {
+            margin-top: 14px;
+            padding: 16px;
+            border: 1px solid #fcd34d;
+            border-radius: 10px;
+            background: #fffbeb;
+            color: #78350f;
+            line-height: 1.8;
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
+        }
+
+        .hint-box.is-error {
+            border-color: #fecaca;
+            background: #fef2f2;
+            color: #b91c1c;
+        }
+    </style>
 
 {% endblock %}
 
@@ -163,6 +222,86 @@
 
             }
         );
+
+        (() => {
+
+            const hintButton = document.getElementById('hint-button');
+            const hintBox = document.getElementById('hint-box');
+            const form = document.getElementById('answer-form');
+
+            let loadedHint = '';
+
+            hintButton.addEventListener('click', async () => {
+
+                hintBox.hidden = false;
+                hintButton.setAttribute('aria-expanded', 'true');
+
+                if (loadedHint) {
+                    hintBox.textContent = loadedHint;
+                    return;
+                }
+
+                hintButton.disabled = true;
+                hintButton.textContent = 'ヒントを作成中…';
+
+                hintBox.classList.remove('is-error');
+                hintBox.textContent = 'AIがヒントを考えています…';
+
+                const data = new FormData();
+
+                data.append(
+                    'question_index',
+                    form.querySelector('[name="question_index"]').value
+                );
+
+                try {
+
+                    const response = await fetch(hintButton.dataset.url, {
+                        method: 'POST',
+                        mode: 'same-origin',
+                        credentials: 'same-origin',
+                        headers: {
+                            'X-CSRFToken': form.querySelector(
+                                '[name="csrfmiddlewaretoken"]'
+                            ).value,
+                        },
+                        body: data,
+                    });
+
+                    const result = await response.json();
+
+                    if (!response.ok) {
+                        throw new Error(
+                            result.error || 'ヒントを取得できませんでした。'
+                        );
+                    }
+
+                    if (typeof result.hint !== 'string' || !result.hint.trim()) {
+                        throw new Error('ヒントを取得できませんでした。');
+                    }
+
+                    loadedHint = result.hint;
+                    hintBox.textContent = loadedHint;
+
+                } catch (error) {
+
+                    hintBox.classList.add('is-error');
+                    hintBox.textContent = error.message || (
+                        '通信に失敗しました。もう一度お試しください。'
+                    );
+
+                } finally {
+
+                    hintButton.disabled = false;
+                    hintButton.textContent = loadedHint
+                        ? 'ヒントを表示済み'
+                        : 'ヒントを再取得する';
+
+                }
+
+            });
+
+        })();
 
     </script>
 

@@ -8,6 +8,7 @@ from .views import (
     ResultView,
     RetryView,
     HistoryView,
+    HintView
 )
 
 from .learning_views import (
@@ -121,6 +122,13 @@ urlpatterns = [
         'learning/play/<uuid:run_id>/',
         LearningPlayView.as_view(),
         name='learning_play',
+    ),
+
+    # 回答前のヒント
+    path(
+        'hint/<uuid:attempt_id>/',
+        HintView.as_view(),
+        name='hint',
     ),
 
 ]
