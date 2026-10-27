@@ -8,7 +8,8 @@ from .views import (
     ResultView,
     RetryView,
     HistoryView,
-    HintView
+    HintView,
+    AdviceView,
 )
 
 from .learning_views import (
@@ -129,6 +130,13 @@ urlpatterns = [
         'hint/<uuid:attempt_id>/',
         HintView.as_view(),
         name='hint',
+    ),
+
+    # 学習結果へのアドバイス
+    path(
+        'advice/<uuid:attempt_id>/',
+        AdviceView.as_view(),
+        name='advice',
     ),
 
 ]

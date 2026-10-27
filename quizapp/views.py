@@ -36,6 +36,10 @@ from .services.hints import (
     HintGenerationError,
 )
 
+from .services.advice import (
+    generate_advice,
+    AdviceGenerationError,
+)
 
 # ====================================
 # クイズの挑戦記録を作成
@@ -717,4 +721,67 @@ class HintView(QuizAccessMixin, View):
 
         return JsonResponse({
             'hint': hint,
+        })
+
+
+# ====================================
+# 学習結果へのアドバイス
+# ====================================
+
+class AdviceView(QuizAccessMixin, View):
+
+    def post(self, request, attempt_id):
+
+        attempt = self.get_attempt(
+            request,
+            attempt_id,
+        )
+
+        # 全問回答済みのクイズだけ対象にする。
+        if (
+            not attempt.completed_at
+            or len(attempt.answers) != attempt.question_count
+            or len(attempt.questions) != attempt.question_count
+        ):
+
+            return JsonResponse(
+                {
+                    'error': (
+                        'すべての問題に回答してから'
+                        'アドバイスを確認してください。'
+                    ),
+                },
+                status=409,
+            )
+
+        # 同じ結果への再リクエストでは保存済みの文章を返す。
+        saved = request.session.get('quiz_advice', {})
+
+        if (
+            saved.get('attempt_id') == str(attempt.pk)
+            and saved.get('text')
+        ):
+
+            return JsonResponse({
+                'advice': saved['text'],
+            })
+
+        try:
+
+            advice = generate_advice(attempt)
+
+        except AdviceGenerationError as exc:
+
+            return JsonResponse(
+                {'error': str(exc)},
+                status=503,
+            )
+
+        request.session['quiz_advice'] = {
+            'attempt_id': str(attempt.pk),
+            'text': advice,
+        }
+
+        return JsonResponse({
+            'advice': advice,
         })

@@ -10,6 +10,43 @@
         rel="stylesheet"
         href="{% static 'css/quiz.css' %}"
     >
+    <style>
+        .advice-area {
+            margin: 24px 0;
+            padding-top: 24px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        #advice-button {
+            width: 100%;
+            min-height: 48px;
+            font: inherit;
+            cursor: pointer;
+        }
+
+        #advice-button:disabled {
+            opacity: 0.6;
+            cursor: wait;
+        }
+
+        .advice-box {
+            margin-top: 16px;
+            padding: 20px;
+            border: 1px solid #bae6fd;
+            border-radius: 10px;
+            background: #f0f9ff;
+            color: #111827;
+            line-height: 1.9;
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
+        }
+
+        .advice-box.is-error {
+            border-color: #fecaca;
+            background: #fef2f2;
+            color: #b91c1c;
+        }
+    </style>
 {% endblock %}
 
 {% block header_actions %}
@@ -128,6 +165,44 @@
 
             {% endif %}
 
+            <section class="advice-area">
+
+                <h2 class="small-heading">
+                    AIからの学習アドバイス
+                </h2>
+
+                <p class="quiz-note">
+                    今回の回答結果から、復習のポイントを提案します。
+                </p>
+
+                <form
+                    id="advice-form"
+                    method="post"
+                    action="{% url 'quizapp:advice' attempt.pk %}"
+                >
+                    {% csrf_token %}
+
+                    <button
+                        type="submit"
+                        class="quiz-outline"
+                        id="advice-button"
+                        aria-controls="advice-box"
+                        aria-expanded="false"
+                    >
+                        学習アドバイスを見る
+                    </button>
+
+                </form>
+
+                <div
+                    id="advice-box"
+                    class="advice-box"
+                    aria-live="polite"
+                    hidden
+                ></div>
+
+            </section>
+
             <div class="result-actions">
 
                 <form
@@ -169,4 +244,90 @@
 
     </section>
 
+{% endblock %}
+
+{% block extra_js %}
+    <script>
+        (() => {
+
+            const form = document.getElementById('advice-form');
+            const button = document.getElementById('advice-button');
+            const box = document.getElementById('advice-box');
+
+            let savedAdvice = '';
+
+            form.addEventListener('submit', async (event) => {
+
+                event.preventDefault();
+
+                if (button.disabled) {
+                    return;
+                }
+
+                box.hidden = false;
+                button.setAttribute('aria-expanded', 'true');
+
+                if (savedAdvice) {
+                    box.textContent = savedAdvice;
+                    return;
+                }
+
+                button.disabled = true;
+                button.textContent = 'アドバイスを作成中…';
+
+                box.classList.remove('is-error');
+                box.textContent = 'AIが今回の学習結果を確認しています…';
+
+                try {
+
+                    const response = await fetch(form.action, {
+                        method: 'POST',
+                        mode: 'same-origin',
+                        credentials: 'same-origin',
+                        headers: {
+                            'X-CSRFToken': form.querySelector(
+                                '[name="csrfmiddlewaretoken"]'
+                            ).value,
+                        },
+                        body: new FormData(form),
+                    });
+
+                    const result = await response.json();
+
+                    if (!response.ok) {
+                        throw new Error(
+                            result.error || 'アドバイスを取得できませんでした。'
+                        );
+                    }
+
+                    if (
+                        typeof result.advice !== 'string'
+                        || !result.advice.trim()
+                    ) {
+                        throw new Error('アドバイスを取得できませんでした。');
+                    }
+
+                    savedAdvice = result.advice;
+                    box.textContent = savedAdvice;
+
+                } catch (error) {
+
+                    box.classList.add('is-error');
+                    box.textContent = error.message || (
+                        '通信に失敗しました。もう一度お試しください。'
+                    );
+
+                } finally {
+
+                    button.disabled = false;
+                    button.textContent = savedAdvice
+                        ? 'アドバイスを表示済み'
+                        : 'アドバイスを再取得する';
+
+                }
+
+            });
+
+        })();
+    </script>
 {% endblock %}
