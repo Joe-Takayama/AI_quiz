@@ -9,6 +9,23 @@ from .quiz_config import (
 
 class QuizSettingsForm(forms.Form):
 
+    source_mode = forms.ChoiceField(
+        label='出題方法',
+
+        choices=[
+            ('normal', '通常のAI出題'),
+            ('material', '教材から出題'),
+        ],
+
+        initial='normal',
+
+        widget=forms.Select(
+            attrs={
+                'class': 'settings-select',
+            },
+        ),
+    )
+
     field = forms.ChoiceField(
         label='分野',
 

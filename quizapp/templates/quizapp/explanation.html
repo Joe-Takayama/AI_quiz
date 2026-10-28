@@ -181,6 +181,35 @@
 
             <p class="explanation-text">{{ question.explanation }}</p>
 
+            {% if question.source_materials %}
+
+                <section class="ai-sources">
+
+                    <h2 class="small-heading">
+                        出題時にAIへ渡した教材
+                    </h2>
+
+                    {% for source in question.source_materials %}
+
+                        <details class="ai-source">
+
+                            <summary>
+                                {{ source.title }}
+                                （文章 {{ source.chunk_number }}）
+                            </summary>
+
+                            <div class="ai-source-text">
+                                {{ source.content|linebreaksbr }}
+                            </div>
+
+                        </details>
+
+                    {% endfor %}
+
+                </section>
+
+            {% endif %}
+
             <section class="ai-question-area" id="ai-question">
 
                 <h2 class="small-heading">

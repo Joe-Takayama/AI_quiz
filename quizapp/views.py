@@ -189,21 +189,31 @@ class QuizSettingsView(View):
 
         if form.is_valid():
 
+            selected = form.cleaned_data.copy()
+
+            source_mode = selected.pop('source_mode')
+
             try:
 
                 questions = generate_questions(
-                    form.cleaned_data
+                    selected,
+                    use_material=(
+                        source_mode == 'material'
+                    ),
                 )
 
             except QuizGenerationError as exc:
 
-                form.add_error(None, str(exc))
+                form.add_error(
+                    None,
+                    str(exc),
+                )
 
             else:
 
                 attempt = create_attempt(
                     request,
-                    form.cleaned_data,
+                    selected,
                     questions,
                 )
 
@@ -212,7 +222,10 @@ class QuizSettingsView(View):
                     attempt_id=attempt.pk,
                 )
 
-        return self.render_page(request, form)
+        return self.render_page(
+            request,
+            form,
+        )
 
     def render_page(self, request, form):
 

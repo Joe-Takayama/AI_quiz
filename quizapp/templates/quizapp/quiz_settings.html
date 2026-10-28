@@ -143,6 +143,25 @@
 
             {% endif %}
 
+            <!-- 出題方法 -->
+
+            <div class="settings-field">
+
+                <label for="{{ form.source_mode.id_for_label }}">
+                    出題方法
+                </label>
+
+                {{ form.source_mode }}
+
+                {{ form.source_mode.errors }}
+
+                <p class="settings-help">
+                    「教材から出題」では、
+                    登録された教材の内容から問題を作ります。
+                </p>
+
+            </div>
+
             <!-- 分野 -->
 
             <div class="settings-field">
