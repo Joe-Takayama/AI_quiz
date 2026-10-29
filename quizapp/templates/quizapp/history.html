@@ -29,6 +29,15 @@
 
         <h1>学習履歴</h1>
 
+        <p>
+            <a
+                class="quiz-outline"
+                href="{% url 'quizapp:weak_practice' %}"
+            >
+                苦手テーマの追加問題に挑戦 →
+            </a>
+        </p>
+
         <div class="quiz-card">
 
             {% for item in attempts %}

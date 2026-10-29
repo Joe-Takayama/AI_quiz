@@ -132,3 +132,43 @@ class AIQuestionForm(forms.Form):
             ),
         },
     )
+
+
+# ====================================
+# 苦手テーマの追加問題
+# ====================================
+
+class WeakPracticeForm(forms.Form):
+
+    topic = forms.ChoiceField(
+        label='復習するテーマ',
+        choices=[],
+        widget=forms.HiddenInput(),
+        error_messages={
+            'required': 'テーマを選んでください。',
+            'invalid_choice': (
+                'このテーマは現在の追加問題の対象ではありません。'
+                '一覧を確認してください。'
+            ),
+        },
+    )
+
+    def __init__(
+        self,
+        *args,
+        candidates=None,
+        **kwargs,
+    ):
+
+        super().__init__(*args, **kwargs)
+
+        self.fields['topic'].choices = [
+            (
+                item['key'],
+                (
+                    f"{item['field_label']} / "
+                    f"{item['theme_label']}"
+                ),
+            )
+            for item in (candidates or [])
+        ]

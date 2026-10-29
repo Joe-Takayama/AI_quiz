@@ -1,0 +1,207 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}
+    苦手テーマの追加問題 | DataQuiz AI
+{% endblock %}
+
+{% block extra_css %}
+    <link
+        rel="stylesheet"
+        href="{% static 'css/quiz.css' %}"
+    >
+
+    <style>
+        .weak-description {
+            color: #64748b;
+            line-height: 1.8;
+        }
+
+        .weak-card {
+            margin-top: 20px;
+        }
+
+        .weak-card h2 {
+            margin-top: 0;
+            font-size: 20px;
+        }
+
+        .weak-score {
+            margin: 16px 0;
+            font-size: 17px;
+            line-height: 1.8;
+        }
+
+        .weak-score strong {
+            color: #b45309;
+            font-size: 24px;
+        }
+
+        .weak-start {
+            width: 100%;
+            cursor: pointer;
+        }
+
+        .weak-start:disabled {
+            opacity: 0.6;
+            cursor: wait;
+        }
+
+        .weak-errors {
+            margin: 20px 0;
+            padding: 16px;
+            border: 1px solid #fecaca;
+            border-radius: 8px;
+            background: #fef2f2;
+            color: #b91c1c;
+        }
+    </style>
+{% endblock %}
+
+{% block header_actions %}
+    {% include 'quizapp/_quiz_header.html' %}
+{% endblock %}
+
+{% block content %}
+
+    <section class="quiz-page">
+
+        <a
+            class="quiz-back"
+            href="{% url 'quizapp:history' %}"
+        >
+            ← 学習履歴へ戻る
+        </a>
+
+        <h1>苦手テーマの追加問題</h1>
+
+        <p class="weak-description">
+            完了したクイズの履歴から、
+            5問以上回答し、正答率が60％未満のテーマを表示します。
+            追加問題は初級・5問です。
+        </p>
+
+        <p class="quiz-note">
+            通常出題・教材出題・同じ問題への再挑戦を集計します。
+            復習・お気に入り専用画面での再挑戦は含みません。
+            難易度をまとめた成績であり、苦手を断定するものではありません。
+        </p>
+
+        {% if form.errors %}
+
+            <div class="weak-errors" role="alert">
+                {{ form.non_field_errors }}
+                {{ form.topic.errors }}
+            </div>
+
+        {% endif %}
+
+        {% for item in candidates %}
+
+            <div class="quiz-card weak-card">
+
+                <h2>
+                    {{ item.field_label }}
+                    ／ {{ item.theme_label }}
+                </h2>
+
+                <p class="weak-score">
+                    正答率
+                    <strong>
+                        {{ item.accuracy|floatformat:"-1" }}％
+                    </strong>
+                    <br>
+                    {{ item.total }}問中
+                    {{ item.correct }}問正解
+                </p>
+
+                <p class="quiz-note">
+                    同じテーマの新しい問題で、
+                    理解を確認しましょう。
+                </p>
+
+                <form
+                    method="post"
+                    action="{% url 'quizapp:weak_practice' %}"
+                    class="weak-form"
+                >
+                    {% csrf_token %}
+
+                    <input
+                        type="hidden"
+                        name="topic"
+                        value="{{ item.key }}"
+                    >
+
+                    <button
+                        type="submit"
+                        class="quiz-primary weak-start"
+                    >
+                        このテーマの追加問題に挑戦 →
+                    </button>
+
+                </form>
+
+            </div>
+
+        {% empty %}
+
+            <div class="quiz-card">
+
+                <h2>現在、対象のテーマはありません</h2>
+
+                <p class="weak-description">
+                    回答数が5問未満の場合や、
+                    正答率60％未満のテーマがない場合は、
+                    ここには表示されません。
+                </p>
+
+                <a
+                    class="quiz-primary"
+                    href="{% url 'quizapp:quiz_settings' %}"
+                >
+                    クイズに挑戦する →
+                </a>
+
+            </div>
+
+        {% endfor %}
+
+    </section>
+
+{% endblock %}
+
+{% block extra_js %}
+    <script>
+        document.querySelectorAll('.weak-form').forEach((form) => {
+
+            form.addEventListener('submit', () => {
+
+                document.querySelectorAll('.weak-start').forEach(
+                    (button) => {
+                        button.disabled = true;
+                    }
+                );
+
+                form.querySelector('button').textContent = (
+                    'AIが追加問題を作成中…'
+                );
+
+            });
+
+        });
+
+        window.addEventListener('pageshow', () => {
+
+            document.querySelectorAll('.weak-start').forEach(
+                (button) => {
+                    button.disabled = false;
+                    button.textContent = (
+                        'このテーマの追加問題に挑戦 →'
+                    );
+                }
+            );
+
+        });
+    </script>
+{% endblock %}

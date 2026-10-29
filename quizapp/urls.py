@@ -21,6 +21,8 @@ from .learning_views import (
     LearningPlayView,
 )
 
+from .weak_views import WeakPracticeView
+
 
 app_name = 'quizapp'
 
@@ -137,6 +139,13 @@ urlpatterns = [
         'advice/<uuid:attempt_id>/',
         AdviceView.as_view(),
         name='advice',
+    ),
+
+    # 苦手テーマの追加問題
+    path(
+        'weak-practice/',
+        WeakPracticeView.as_view(),
+        name='weak_practice',
     ),
 
 ]
