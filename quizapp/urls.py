@@ -23,6 +23,8 @@ from .learning_views import (
 
 from .weak_views import WeakPracticeView
 
+from .contact_views import ContactView
+
 
 app_name = 'quizapp'
 
@@ -113,7 +115,7 @@ urlpatterns = [
         name='favorite_detail',
     ),
 
-    # 復習・お気に入りから再挑戦を開始
+    # 復習・お気に入りから再挑戦
     path(
         'learning/start/',
         LearningStartView.as_view(),
@@ -146,6 +148,13 @@ urlpatterns = [
         'weak-practice/',
         WeakPracticeView.as_view(),
         name='weak_practice',
+    ),
+
+    # お問い合わせ
+    path(
+        'contact/',
+        ContactView.as_view(),
+        name='contact',
     ),
 
 ]

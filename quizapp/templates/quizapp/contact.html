@@ -1,0 +1,210 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}
+    お問い合わせ | DataQuiz AI
+{% endblock %}
+
+{% block extra_css %}
+    <link
+        rel="stylesheet"
+        href="{% static 'css/quiz.css' %}"
+    >
+
+    <style>
+        .contact-description {
+            margin-bottom: 24px;
+            color: #64748b;
+            line-height: 1.8;
+        }
+
+        .contact-field {
+            margin-bottom: 22px;
+        }
+
+        .contact-label {
+            display: block;
+            margin-bottom: 8px;
+            color: #111827;
+            font-weight: 600;
+        }
+
+        .contact-required {
+            display: inline-block;
+            margin-left: 8px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            background: #fef2f2;
+            color: #b91c1c;
+            font-size: 12px;
+            font-weight: 400;
+        }
+
+        .contact-input {
+            display: block;
+            box-sizing: border-box;
+            width: 100%;
+            min-height: 46px;
+            padding: 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            background: #fff;
+            color: #111827;
+            font: inherit;
+            line-height: 1.7;
+        }
+
+        textarea.contact-input {
+            min-height: 200px;
+            resize: vertical;
+        }
+
+        .contact-input:focus {
+            outline: 2px solid #0094ff;
+            outline-offset: 2px;
+        }
+
+        .contact-note {
+            margin: 16px 0;
+            color: #64748b;
+            font-size: 13px;
+            line-height: 1.8;
+        }
+
+        .contact-submit {
+            width: 100%;
+            min-height: 48px;
+            cursor: pointer;
+        }
+
+        .contact-submit:disabled {
+            opacity: 0.6;
+            cursor: wait;
+        }
+
+        .contact-errors {
+            margin-bottom: 20px;
+            padding: 14px;
+            border: 1px solid #fecaca;
+            border-radius: 8px;
+            background: #fef2f2;
+            color: #b91c1c;
+            line-height: 1.7;
+        }
+
+        .contact-field .errorlist {
+            margin: 8px 0 0;
+            padding-left: 20px;
+            color: #b91c1c;
+            font-size: 14px;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+
+    <section class="quiz-page">
+
+        <a
+            class="quiz-back"
+            href="{% url 'quizapp:index' %}"
+        >
+            ← TOPへ戻る
+        </a>
+
+        <h1>お問い合わせ</h1>
+
+        <p class="contact-description">
+            不具合の報告や、ご意見・ご要望をお送りください。
+        </p>
+
+        <div class="quiz-card">
+
+            <form
+                method="post"
+                action="{% url 'quizapp:contact' %}"
+                id="contact-form"
+            >
+                {% csrf_token %}
+
+                {% if form.errors %}
+
+                    <div class="contact-errors" role="alert">
+
+                        <p>入力内容や送信状況を確認してください。</p>
+
+                        {{ form.non_field_errors }}
+
+                    </div>
+
+                {% endif %}
+
+                {% for field in form %}
+
+                    <div class="contact-field">
+
+                        <label
+                            class="contact-label"
+                            for="{{ field.id_for_label }}"
+                        >
+                            {{ field.label }}
+
+                            <span class="contact-required">
+                                必須
+                            </span>
+                        </label>
+
+                        {{ field }}
+
+                        {{ field.errors }}
+
+                    </div>
+
+                {% endfor %}
+
+                <p class="contact-note">
+                    お名前・返信先メールアドレス・お問い合わせ内容は、
+                    お問い合わせへの対応に使用します。
+                </p>
+
+                <p class="contact-note">
+                    パスワードやAPIキーなどの情報は記入しないでください。
+                    お問い合わせ内容は管理者へメールで送信されます。
+                </p>
+
+                <button
+                    type="submit"
+                    class="quiz-primary contact-submit"
+                    id="contact-submit"
+                >
+                    お問い合わせを送信する
+                </button>
+
+            </form>
+
+        </div>
+
+    </section>
+
+{% endblock %}
+
+{% block extra_js %}
+    <script>
+        (() => {
+
+            const form = document.getElementById('contact-form');
+            const button = document.getElementById('contact-submit');
+
+            form.addEventListener('submit', () => {
+                button.disabled = true;
+                button.textContent = '送信中…';
+            });
+
+            window.addEventListener('pageshow', () => {
+                button.disabled = false;
+                button.textContent = 'お問い合わせを送信する';
+            });
+
+        })();
+    </script>
+{% endblock %}

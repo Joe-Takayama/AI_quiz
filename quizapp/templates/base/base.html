@@ -24,6 +24,7 @@
 
 <body>
     <header class="site-header">
+
         <div class="header-inner">
 
             <a
@@ -66,6 +67,7 @@
                             >
                                 ログアウト
                             </button>
+
                         </form>
 
                     {% else %}
@@ -90,21 +92,26 @@
             </nav>
 
         </div>
+
     </header>
 
     <main class="site-main">
 
         {% if messages %}
+
             <div
                 class="message-area"
                 aria-live="polite"
             >
                 {% for message in messages %}
+
                     <p class="message">
                         {{ message }}
                     </p>
+
                 {% endfor %}
             </div>
+
         {% endif %}
 
         {% block content %}{% endblock %}
@@ -112,9 +119,16 @@
     </main>
 
     <footer class="site-footer">
+
+        <a href="{% url 'quizapp:contact' %}">
+            お問い合わせ
+        </a>
+
         <small>ⓒ 高山ジョー</small>
+
     </footer>
 
     {% block extra_js %}{% endblock %}
+
 </body>
 </html>
