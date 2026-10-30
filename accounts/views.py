@@ -1,3 +1,7 @@
+import logging
+
+password_reset_logger = logging.getLogger(__name__)
+
 from smtplib import SMTPException
 
 from django.conf import settings
@@ -132,11 +136,6 @@ class LogoutView(View):
         return redirect('quizapp:index')
 
 
-# ========================================
-# パスワード再設定
-# メールアドレス入力・メール送信
-# ========================================
-
 class PasswordResetView(View):
 
     def get(self, request):
@@ -146,86 +145,128 @@ class PasswordResetView(View):
         return render(
             request,
             'accounts/password_reset.html',
-            {'form': form}
+            {'form': form},
         )
 
     def post(self, request):
 
         form = PasswordResetForm(request.POST)
 
-        if form.is_valid():
+        if not form.is_valid():
 
-            email = form.cleaned_data['email']
-
-            users = User.objects.filter(
-                email__iexact=email,
-                is_active=True
+            password_reset_logger.warning(
+                'Password reset: invalid form'
             )
 
-            try:
+            return render(
+                request,
+                'accounts/password_reset.html',
+                {'form': form},
+            )
 
-                for user in users:
+        email = form.cleaned_data['email'].strip()
 
-                    if not user.has_usable_password():
-                        continue
+        # 無効ユーザーも含めて、登録の一致件数を確認する。
+        registered = list(
+            User.objects.filter(
+                email__iexact=email,
+            )
+        )
 
-                    # ユーザーIDをURL用の文字列に変換する。
-                    uidb64 = urlsafe_base64_encode(
-                        force_bytes(user.pk)
-                    )
+        eligible = [
+            user
+            for user in registered
+            if user.is_active
+            and user.has_usable_password()
+        ]
 
-                    # 再設定リンクの確認用トークンを作る。
-                    token = default_token_generator.make_token(user)
+        # メールアドレスやトークンはログに出さない。
+        password_reset_logger.warning(
+            'Password reset: matched=%s eligible=%s',
+            len(registered),
+            len(eligible),
+        )
 
-                    # 再設定画面のURLを作る。
-                    reset_path = reverse(
-                        'accounts:password_reset_confirm',
-                        kwargs={
-                            'uidb64': uidb64,
-                            'token': token,
-                        }
-                    )
+        sent_total = 0
 
-                    reset_url = request.build_absolute_uri(reset_path)
+        try:
 
-                    # 再設定メールを送る。
-                    send_mail(
-                        subject='【DataQuiz AI】パスワード再設定',
-                        message=(
-                            'パスワード再設定を受け付けました。\n\n'
-                            '以下のリンクから新しいパスワードを'
-                            '設定してください。\n\n'
-                            f'{reset_url}\n\n'
-                            'リンクの有効期限は1時間です。\n'
-                            '心当たりがない場合は、このメールを'
-                            '破棄してください。'
-                        ),
-                        from_email=settings.DEFAULT_FROM_EMAIL,
-                        recipient_list=[user.email],
-                        fail_silently=False
-                    )
+            for user in eligible:
 
-            except (SMTPException, OSError):
-
-                form.add_error(
-                    None,
-                    'メールを送信できませんでした。'
-                    '時間をおいて再度お試しください。'
+                uidb64 = urlsafe_base64_encode(
+                    force_bytes(user.pk)
                 )
 
-                return render(
-                    request,
-                    'accounts/password_reset.html',
-                    {'form': form}
+                token = default_token_generator.make_token(
+                    user
                 )
 
-            # 未登録のアドレスでも同じ案内画面へ移動する。
-            return redirect('accounts:password_reset_done')
+                reset_path = reverse(
+                    'accounts:password_reset_confirm',
+                    kwargs={
+                        'uidb64': uidb64,
+                        'token': token,
+                    },
+                )
 
-        return render(
-            request,
-            'accounts/password_reset.html',
-            {'form': form}
+                reset_url = request.build_absolute_uri(
+                    reset_path
+                )
+
+                sent_count = send_mail(
+                    subject='【DataQuiz AI】パスワード再設定',
+                    message=(
+                        'パスワード再設定を受け付けました。\n\n'
+                        '以下のリンクから新しいパスワードを'
+                        '設定してください。\n\n'
+                        f'{reset_url}\n\n'
+                        'リンクの有効期限は1時間です。\n'
+                        '心当たりがない場合は、このメールを'
+                        '破棄してください。'
+                    ),
+                    from_email=settings.DEFAULT_FROM_EMAIL,
+                    recipient_list=[user.email],
+                    fail_silently=False,
+                )
+
+                password_reset_logger.warning(
+                    'Password reset: backend_sent=%s',
+                    sent_count,
+                )
+
+                if sent_count != 1:
+                    raise SMTPException(
+                        'メール送信件数が1件ではありません。'
+                    )
+
+                sent_total += sent_count
+
+        except (SMTPException, OSError) as exc:
+
+            password_reset_logger.warning(
+                'Password reset: failed=%s',
+                type(exc).__name__,
+            )
+
+            form.add_error(
+                None,
+                'メールを送信できませんでした。'
+                '時間をおいて再度お試しください。',
+            )
+
+            return render(
+                request,
+                'accounts/password_reset.html',
+                {'form': form},
+            )
+
+        password_reset_logger.warning(
+            'Password reset: finished sent_total=%s',
+            sent_total,
+        )
+
+        return redirect(
+            'accounts:password_reset_done'
         )
 
 
